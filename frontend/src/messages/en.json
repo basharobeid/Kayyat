@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "title": "Khayyat — Your clothes. Your tailor. Your way.",
+    "description": "One platform for customers, tailors, fabric sellers and delivery."
+  },
+  "brand": {
+    "name": "Khayyat"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "tailors": "Tailors",
+    "howItWorks": "How it works",
+    "forTailors": "For tailors",
+    "requestService": "Request a service",
+    "skipToContent": "Skip to content"
+  },
+  "locale": {
+    "switchTo": "العربية",
+    "switchLabel": "التبديل إلى العربية"
+  },
+  "home": {
+    "hero": {
+      "title": "Your clothes. Your tailor. Your way.",
+      "subtitle": "From a simple hem to a full custom suit, from rare fabric to doorstep delivery — Khayyat brings it all together.",
+      "primaryCta": "Request a service",
+      "secondaryCta": "Browse tailors"
+    },
+    "services": {
+      "title": "What do you need?",
+      "alteration": { "name": "Alteration", "description": "Hem, take in, let out — your exact fit." },
+      "repair": { "name": "Repair", "description": "Zips, buttons, tears — good as new." },
+      "custom": { "name": "Custom", "description": "Thobe, suit, dress — made for you from scratch." },
+      "fabric": { "name": "Fabrics", "description": "Browse fabric from trusted sellers.", "badge": "Coming soon" }
+    },
+    "steps": {
+      "title": "How Khayyat works",
+      "one": { "title": "Request", "description": "Describe what you need, add a photo and your location." },
+      "two": { "title": "Compare quotes", "description": "Nearby tailors send their price and turnaround." },
+      "three": { "title": "Receive & review", "description": "Track every stage, then tell us how it went." }
+    },
+    "tailors": {
+      "title": "Are you a tailor?",
+      "description": "Steady requests from your area, a portfolio for your work, and earnings tracking — no hidden fees.",
+      "cta": "Join as a tailor"
+    }
+  },
+  "comingSoon": {
+    "badge": "In progress",
+    "title": "This page is being built",
+    "description": "We're working on it now and it will be available soon. We never show features that don't really work.",
+    "back": "Back to home"
+  },
+  "pages": {
+    "tailors": "Tailors",
+    "newRequest": "New service request",
+    "joinAsTailor": "Join as a tailor"
+  },
+  "footer": {
+    "tagline": "Binding craftsmanship to technology without losing its soul.",
+    "rights": "© {year} Khayyat. All rights reserved."
+  }
+}

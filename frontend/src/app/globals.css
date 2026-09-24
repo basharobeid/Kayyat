@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand tokens (blueprint 7.3), as RGB triplets so Tailwind can apply opacity. */
+:root {
+  --color-gold: 201 162 39; /* Thread Gold #C9A227: fills, accents. Not for text on light bg. */
+  --color-gold-ink: 127 100 16; /* Darkened gold for text/focus on cream: 5.2:1 contrast. */
+  --color-ink: 27 42 74; /* Deep Indigo #1B2A4A */
+  --color-cream: 250 247 242; /* Warm Cream #FAF7F2 */
+  --color-charcoal: 45 45 45; /* #2D2D2D */
+  --color-olive: 107 127 89;
+  --color-clay: 184 125 90;
+  /* Warm Grey darkened from #8A8178 (3.6:1) to #6E665E (5.3:1) to meet WCAG AA for text. */
+  --color-muted: 110 102 94;
+  --color-mist: 232 238 245;
+  --color-surface: 255 255 255;
+  --color-line: 229 223 214;
+
+  --color-success: 46 125 91;
+  --color-warning: 199 125 46;
+  --color-danger: 179 58 58;
+  --color-info: 58 110 165;
+}
+
+/* Typography (blueprint 7.4): Arabic uses IBM Plex Sans Arabic throughout;
+   English pairs Playfair Display headings with Inter body. */
+html[lang='ar'] {
+  --font-body: var(--font-arabic);
+  --font-heading: var(--font-arabic);
+}
+html[lang='en'] {
+  --font-body: var(--font-inter), var(--font-arabic);
+  --font-heading: var(--font-playfair);
+}
+
+@layer base {
+  html {
+    @apply bg-cream text-charcoal antialiased;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply font-sans text-body-m;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-ink;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-gold-ink));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

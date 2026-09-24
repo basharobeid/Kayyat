@@ -1,0 +1,45 @@
+# Local development stack on Postgres. Without Docker, run backend and frontend directly
+# (see README): the backend falls back to SQLite.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: khayyat
+      POSTGRES_USER: khayyat
+      POSTGRES_PASSWORD: khayyat
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U khayyat -d khayyat"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://khayyat:khayyat@db:5432/khayyat
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on: [backend]
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_data:
