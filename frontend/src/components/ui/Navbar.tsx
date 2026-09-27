@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { useAuth } from '@/lib/auth-context';
@@ -12,6 +12,14 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isLoading, logout } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -26,7 +34,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-      <header className="pointer-events-auto w-full max-w-4xl bg-[#12141A]/90 backdrop-blur-2xl border border-white/[0.15] shadow-[0_12px_40px_rgba(0,0,0,0.35)] rounded-full px-6 py-2.5 flex items-center justify-between transition-all duration-300">
+      <header className={`pointer-events-auto w-full max-w-6xl whitespace-nowrap backdrop-blur-2xl border rounded-full px-6 flex items-center justify-between gap-4 transition-all duration-500 ${scrolled ? 'bg-[#0B0D12]/95 border-gold/30 shadow-[0_12px_40px_rgba(0,0,0,0.45)] py-1.5' : 'bg-[#12141A]/70 border-white/[0.15] shadow-[0_12px_40px_rgba(0,0,0,0.25)] py-2.5'}`}>
         
         {/* Brand Logo & Links */}
         <div className="flex items-center gap-7">
@@ -39,7 +47,7 @@ export const Navbar: React.FC = () => {
             />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-5 text-[0.875rem] font-medium text-zinc-300">
+          <nav className="hidden lg:flex items-center gap-5 text-[0.875rem] font-medium text-zinc-300">
             <Link href="/requests" className="hover:text-white transition-colors">
               {isAr ? 'عدّل ملابسك' : 'Alterations'}
             </Link>
@@ -73,16 +81,9 @@ export const Navbar: React.FC = () => {
             {isAr ? 'English' : 'العربية'}
           </button>
 
-          {/* Fix my clothes Pill */}
-          <Link href="/requests" className="hidden sm:inline-block">
-            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-[0.8125rem] font-medium text-white bg-white/10 hover:bg-white/20 border border-white/20 transition-all shadow-xs">
-              {isAr ? 'عدّل ملابسك' : 'Fix my clothes'}
-            </span>
-          </Link>
-
           {/* Work with us Pill */}
           <Link href="/dashboard/tailor">
-            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-[0.8125rem] font-semibold text-black bg-white hover:bg-zinc-200 transition-all shadow-sm">
+            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-[0.8125rem] font-bold text-[#0B0D12] bg-gold hover:bg-[#dcb53a] transition-all shadow-[0_4px_20px_rgba(201,162,39,0.35)]">
               {isAr ? 'انضم كشريك' : 'Work with us'}
             </span>
           </Link>
@@ -111,7 +112,7 @@ export const Navbar: React.FC = () => {
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 text-zinc-300 hover:text-white focus:outline-none"
+            className="lg:hidden p-1.5 text-zinc-300 hover:text-white focus:outline-none"
             aria-label="Toggle menu"
           >
             <span className="text-xl">{mobileMenuOpen ? '✕' : '☰'}</span>
@@ -121,7 +122,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="pointer-events-auto absolute top-16 left-4 right-4 bg-[#12141A]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 shadow-2xl space-y-4 md:hidden text-white">
+        <div className="pointer-events-auto absolute top-16 left-4 right-4 bg-[#12141A]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 shadow-2xl space-y-4 lg:hidden text-white">
           <nav className="flex flex-col gap-3 text-body-m font-medium text-zinc-300">
             <Link
               href="/"
