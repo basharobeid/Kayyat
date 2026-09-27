@@ -6,6 +6,7 @@ import { Link } from '@/i18n/routing';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 import { catalogApi } from '@/lib/api';
+import { PriceGuide } from '@/components/features/PriceGuide';
 
 // Sensible fallbacks if the live catalog can't be reached (e.g. the free backend is
 // cold-starting) so the marketing page never shows a broken/empty stats row.
@@ -129,12 +130,18 @@ export default function HomePage() {
          ───────────────────────────────────────────────────────────── */}
       <RevealOnScroll>
         <section className="py-10 border-b border-black/[0.06] bg-white">
-          <div className="max-w-5xl mx-auto px-4 flex flex-wrap items-center justify-around gap-8 md:gap-14 opacity-80 text-[#18181B] font-serif font-bold text-xl md:text-2xl tracking-[0.2em] uppercase">
-            <span className="tracking-tight font-sans font-black bg-black text-white px-2 py-0.5 rounded-sm text-lg">BBC</span>
-            <span className="font-serif italic font-bold">VOGUE</span>
-            <span className="font-serif tracking-widest">THE TIMES</span>
-            <span className="font-serif italic tracking-wider">BAZAAR</span>
-            <span className="font-serif lowercase font-bold tracking-tight">The Guardian</span>
+          <div className="marquee max-w-6xl mx-auto">
+            <div className="marquee-track items-center opacity-80 text-[#18181B] font-serif font-bold text-xl md:text-2xl tracking-[0.2em] uppercase">
+              {[0, 1].map((copy) => (
+                <div key={copy} className="flex items-center gap-16 md:gap-24 pe-16 md:pe-24" aria-hidden={copy === 1}>
+                  <span className="tracking-tight font-sans font-black bg-black text-white px-2 py-0.5 rounded-sm text-lg">BBC</span>
+                  <span className="font-serif italic font-bold">VOGUE</span>
+                  <span className="font-serif tracking-widest">THE TIMES</span>
+                  <span className="font-serif italic tracking-wider">BAZAAR</span>
+                  <span className="font-serif lowercase font-bold tracking-tight">The Guardian</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </RevealOnScroll>
@@ -252,6 +259,95 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+        </RevealOnScroll>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          TWO WAYS TO GET IT DONE
+         ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-4 space-y-12">
+        <RevealOnScroll className="text-center space-y-4 max-w-2xl mx-auto">
+          <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
+            {isAr ? 'كيف بدك الخدمة؟' : 'Your way'}
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">
+            {isAr ? 'طريقتين، والخيار إلك' : 'Two ways to get it done'}
+          </h2>
+        </RevealOnScroll>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <RevealOnScroll className="group rounded-3xl overflow-hidden bg-[#14171F] text-white shadow-xl flex flex-col">
+            <div className="bg-cream overflow-hidden">
+              <img
+                src="/mobile-tailor-van.svg"
+                alt={isAr ? 'الخيّاط المتنقل' : 'Mobile tailor van'}
+                className="w-full h-auto group-hover:scale-[1.03] transition-transform duration-700"
+              />
+            </div>
+            <div className="p-8 space-y-3 flex-1 flex flex-col">
+              <span className="text-xs font-bold text-gold uppercase tracking-widest">
+                {isAr ? 'جديد · زيارة منزلية' : 'New · Home visit'}
+              </span>
+              <h3 className="text-2xl font-bold tracking-tight">
+                {isAr ? 'الخيّاط بيجي لعندك' : 'The tailor comes to you'}
+              </h3>
+              <p className="text-sm text-zinc-400 leading-relaxed flex-1">
+                {isAr
+                  ? 'فان مجهّز بيوصل لتحت بيتك، الخيّاط بياخد قياسك على الطبيعة، وبيفصّل القطعة فوراً أو بياخدها ع المشغل وبيرجعها.'
+                  : 'An equipped van pulls up outside, the tailor measures you in person, then alters on the spot or takes it to the workshop and brings it back.'}
+              </p>
+              <Link href="/requests" className="pt-2">
+                <span className="btn-shine inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-[#18181B] bg-gold hover:bg-gold/90">
+                  {isAr ? 'اطلب زيارة ➔' : 'Book a visit ➔'}
+                </span>
+              </Link>
+            </div>
+          </RevealOnScroll>
+
+          <RevealOnScroll className="group rounded-3xl overflow-hidden bg-white border border-line/80 shadow-xl flex flex-col" delayMs={120}>
+            <div className="overflow-hidden aspect-[5/3]">
+              <img
+                src="/AGI6JHG4ojGjbREnbz8H9K897g.png"
+                alt={isAr ? 'استلام وتوصيل' : 'Pickup and delivery'}
+                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+              />
+            </div>
+            <div className="p-8 space-y-3 flex-1 flex flex-col">
+              <span className="text-xs font-bold text-gold-ink uppercase tracking-widest">
+                {isAr ? 'استلام وتوصيل · أو بالمشغل' : 'Pickup & delivery · or drop-off'}
+              </span>
+              <h3 className="text-2xl font-bold tracking-tight text-[#18181B]">
+                {isAr ? 'دبّسها وخلّي الباقي علينا' : 'Pin it, we handle the rest'}
+              </h3>
+              <p className="text-sm text-[#71717A] leading-relaxed flex-1">
+                {isAr
+                  ? 'ثبّت الطول بالدبابيس وصوّر القطعة، مندوب بيستلمها منك وبيرجعها جاهزة ومكوية — أو سلّمها بنفسك للمشغل.'
+                  : 'Pin the fit and snap a photo; a courier collects it and returns it pressed and ready — or drop it at the workshop yourself.'}
+              </p>
+              <Link href="/requests" className="pt-2">
+                <span className="btn-shine inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-white bg-[#18181B] hover:bg-black">
+                  {isAr ? 'ابدأ الحجز ➔' : 'Start booking ➔'}
+                </span>
+              </Link>
+            </div>
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────
+          PRICE GUIDE
+         ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-4xl mx-auto px-4 space-y-10">
+        <RevealOnScroll className="text-center space-y-4 max-w-2xl mx-auto">
+          <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
+            {isAr ? 'دليل الأسعار' : 'Price guide'}
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">
+            {isAr ? 'أسعار واضحة، بدون مفاجآت' : 'Clear prices, no surprises'}
+          </h2>
+        </RevealOnScroll>
+        <RevealOnScroll>
+          <PriceGuide />
         </RevealOnScroll>
       </section>
 

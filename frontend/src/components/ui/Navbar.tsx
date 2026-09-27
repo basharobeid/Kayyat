@@ -49,6 +49,9 @@ export const Navbar: React.FC = () => {
             <Link href="/fabrics" className="hover:text-white transition-colors">
               {isAr ? 'سوق الأقمشة' : 'Fabrics'}
             </Link>
+            <Link href="/prices" className="hover:text-white transition-colors">
+              {isAr ? 'الأسعار' : 'Prices'}
+            </Link>
             <Link href="/orders" className="hover:text-white transition-colors">
               {isAr ? 'تتبع الطلب' : 'Track Order'}
             </Link>
@@ -147,6 +150,13 @@ export const Navbar: React.FC = () => {
               className="py-1 hover:text-white"
             >
               {isAr ? 'سوق الأقمشة' : 'Fabrics'}
+            </Link>
+            <Link
+              href="/prices"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-1 hover:text-white"
+            >
+              {isAr ? 'الأسعار' : 'Prices'}
             </Link>
             <Link
               href="/orders"

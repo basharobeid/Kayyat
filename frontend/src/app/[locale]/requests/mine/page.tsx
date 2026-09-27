@@ -125,6 +125,21 @@ export default function MyRequestsPage() {
 
               <p className="text-sm text-charcoal">{req.description}</p>
 
+              {(req.preferred_date || req.budget_max != null) && (
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {req.preferred_date && (
+                    <span className="px-2.5 py-1 rounded-full bg-mist text-ink font-medium">
+                      📅 {new Date(req.preferred_date).toLocaleDateString(isAr ? 'ar-SA' : 'en-US')}
+                    </span>
+                  )}
+                  {req.budget_max != null && (
+                    <span className="px-2.5 py-1 rounded-full bg-gold/15 text-gold-ink font-medium">
+                      💰 {isAr ? 'حتى' : 'up to'} {req.budget_max} {currency}
+                    </span>
+                  )}
+                </div>
+              )}
+
               {(req.status === 'open' || req.status === 'quotes_received') && (
                 <Button
                   variant="outline"

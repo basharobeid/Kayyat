@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 import { Navbar } from '@/components/ui/Navbar';
 import { Footer } from '@/components/ui/Footer';
 import { AuthProvider } from '@/lib/auth-context';
+import { WhatsAppButton } from '@/components/ui/WhatsAppButton';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -36,6 +37,7 @@ export default async function LocaleLayout({
             <Navbar />
             <main className="flex-grow">{children}</main>
             <Footer />
+            <WhatsAppButton />
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

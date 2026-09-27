@@ -40,6 +40,8 @@ export const BookingWizard: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [city, setCity] = useState<CitySlug>('riyadh');
   const [fulfillment, setFulfillment] = useState<'delivery' | 'dropoff' | 'van_visit'>('delivery');
+  const [preferredDate, setPreferredDate] = useState('');
+  const [budget, setBudget] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [createdRequest, setCreatedRequest] = useState<RequestItem | null>(null);
@@ -98,6 +100,8 @@ export const BookingWizard: React.FC = () => {
         needs_pickup: fulfillment !== 'dropoff',
         needs_delivery: fulfillment !== 'dropoff',
         photo_urls: photoUrls,
+        preferred_date: preferredDate || undefined,
+        budget_max: budget ? Number(budget) : undefined,
       });
       setCreatedRequest(request);
     } catch (err) {
@@ -118,6 +122,8 @@ export const BookingWizard: React.FC = () => {
     setSelectedService(null);
     setNotes('');
     setPhotoUrls([]);
+    setPreferredDate('');
+    setBudget('');
   };
 
   // --- Auth gate: submitting a request requires a signed-in customer account ------------------
@@ -465,6 +471,35 @@ export const BookingWizard: React.FC = () => {
                   {isAr ? 'تقوم بتسليم القطعة بنفسك واستلامها من المشغل.' : 'You deliver and collect the item at the workshop.'}
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="block text-body-s font-semibold text-charcoal">
+                {isAr ? 'التاريخ المفضّل (اختياري)' : 'Preferred date (optional)'}
+              </label>
+              <input
+                type="date"
+                value={preferredDate}
+                min={new Date().toISOString().slice(0, 10)}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                className="w-full h-11 px-3 rounded-md border border-line bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-body-s font-semibold text-charcoal">
+                {isAr ? 'ميزانيتك القصوى بالريال (اختياري)' : 'Max budget in SAR (optional)'}
+              </label>
+              <input
+                type="number"
+                min={1}
+                inputMode="numeric"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                placeholder={isAr ? 'مثال: 80' : 'e.g. 80'}
+                className="w-full h-11 px-3 rounded-md border border-line bg-surface text-ink text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+              />
             </div>
           </div>
 
