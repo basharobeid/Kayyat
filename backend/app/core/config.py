@@ -2,7 +2,7 @@ from decimal import Decimal
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 INSECURE_SECRET = "change-me"
@@ -34,6 +34,17 @@ class Settings(BaseSettings):
     media_dir: str = "./media"
     media_base_url: str = "http://localhost:8000/media"
     max_upload_bytes: int = 5 * 1024 * 1024
+
+    @field_validator("database_url")
+    @classmethod
+    def _use_psycopg_driver(cls, v: str) -> str:
+        # Managed Postgres providers hand out plain postgres:// / postgresql:// URLs, which
+        # make SQLAlchemy default to psycopg2 -- not installed here (we ship psycopg 3 via
+        # the `postgres` extra). Normalize so any provider's URL works without manual editing.
+        for prefix in ("postgres://", "postgresql://"):
+            if v.startswith(prefix):
+                return "postgresql+psycopg://" + v[len(prefix):]
+        return v
 
     @property
     def cors_origin_list(self) -> list[str]:
