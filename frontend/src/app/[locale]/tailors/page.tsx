@@ -21,6 +21,7 @@ interface TailorItem {
   image: string;
   bio: string;
   isVerified: boolean;
+  offersVanVisit: boolean;
 }
 
 const TAILORS_DIRECTORY: TailorItem[] = [
@@ -39,6 +40,7 @@ const TAILORS_DIRECTORY: TailorItem[] = [
     image: '/AEfoZzbxbn68WvwFvvXQInhOs.jpeg',
     bio: 'خبير خياطة وتعديل بدلات إيطالية وثياب سعودية بدقة متناهية والتزام بالموعد.',
     isVerified: true,
+    offersVanVisit: true,
   },
   {
     id: 't-2',
@@ -55,6 +57,7 @@ const TAILORS_DIRECTORY: TailorItem[] = [
     image: '/KHAYAT.png',
     bio: 'تصميم وتعديل مقاسات فساتين الزفاف والسهرة مع ضمان الحفاظ على أصل القماش.',
     isVerified: true,
+    offersVanVisit: false,
   },
   {
     id: 't-3',
@@ -71,6 +74,7 @@ const TAILORS_DIRECTORY: TailorItem[] = [
     image: '/4ELzdJRzQ5VXQAPbmICpr3joms.png',
     bio: 'متخصصون في التعديلات الفورية للجينز والبناطيل والقمصان مع استلام وتسليم من الباب.',
     isVerified: true,
+    offersVanVisit: true,
   },
   {
     id: 't-4',
@@ -87,6 +91,7 @@ const TAILORS_DIRECTORY: TailorItem[] = [
     image: '/G4cfAEDulUqxGAMCOM4atCL63M.jpeg',
     bio: 'خياطة يدوية احترافية للبشوت والثياب باستخدام خيوط القصب الذهبي والحرير الطبيعي.',
     isVerified: true,
+    offersVanVisit: true,
   },
   {
     id: 't-5',
@@ -103,6 +108,7 @@ const TAILORS_DIRECTORY: TailorItem[] = [
     image: '/AGI6JHG4ojGjbREnbz8H9K897g.png',
     bio: 'عناية متناهية بالقطع الثمينة وترميم الملابس المتضررة مع توفير دبابيس المقاس المنزلية.',
     isVerified: true,
+    offersVanVisit: false,
   },
 ];
 
@@ -120,6 +126,7 @@ export default function TailorsPage() {
   const isAr = locale === 'ar';
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
+  const [vanOnly, setVanOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filtered = TAILORS_DIRECTORY.filter((t) => {
@@ -127,13 +134,14 @@ export default function TailorsPage() {
     const matchesSpecialty =
       selectedSpecialty === 'all' ||
       t.specialties.some((s) => s.includes(selectedSpecialty));
+    const matchesVan = !vanOnly || t.offersVanVisit;
     const matchesSearch =
       searchQuery === '' ||
       t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.specialties.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesCity && matchesSpecialty && matchesSearch;
+    return matchesCity && matchesSpecialty && matchesVan && matchesSearch;
   });
 
   return (
@@ -211,6 +219,20 @@ export default function TailorsPage() {
             </button>
           ))}
         </div>
+
+        {/* Mobile Tailor Van Toggle */}
+        <div className="flex flex-wrap items-center gap-2 pt-2">
+          <button
+            onClick={() => setVanOnly((v) => !v)}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${
+              vanOnly
+                ? 'bg-gold/20 text-gold-ink border border-gold/40 shadow-xs'
+                : 'bg-[#F4F4F5] text-charcoal hover:bg-zinc-200 border border-transparent'
+            }`}
+          >
+            🚐 {isAr ? 'يقدّم خدمة الخيّاط المتنقل فقط' : 'Offers mobile tailor van only'}
+          </button>
+        </div>
       </div>
 
       {/* Empty state */}
@@ -231,6 +253,7 @@ export default function TailorsPage() {
             onClick={() => {
               setSelectedCity('all');
               setSelectedSpecialty('all');
+              setVanOnly(false);
               setSearchQuery('');
             }}
           >
@@ -262,6 +285,11 @@ export default function TailorsPage() {
                     {tailor.isVerified && (
                       <span className="text-xs font-bold text-olive bg-olive/15 px-2 py-0.5 rounded-full">
                         ✓ {isAr ? 'معتمد' : 'Verified'}
+                      </span>
+                    )}
+                    {tailor.offersVanVisit && (
+                      <span className="text-xs font-bold text-gold-ink bg-gold/15 px-2 py-0.5 rounded-full whitespace-nowrap">
+                        🚐 {isAr ? 'خيّاط متنقل' : 'Mobile van'}
                       </span>
                     )}
                   </div>
