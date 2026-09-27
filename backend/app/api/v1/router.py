@@ -2,11 +2,11 @@ from fastapi import APIRouter
 from sqlalchemy import text
 
 from app.api.deps import DbSession
-from app.api.v1 import auth, users
+from app.api.v1 import admin, auth, catalog, messages, orders, requests, tailors, users
 
 api_router = APIRouter()
-api_router.include_router(auth.router)
-api_router.include_router(users.router)
+for module in (auth, users, catalog, tailors, requests, orders, messages, admin):
+    api_router.include_router(module.router)
 
 
 @api_router.get("/health", tags=["meta"])

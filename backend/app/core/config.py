@@ -28,6 +28,12 @@ class Settings(BaseSettings):
 
     # Business rules live in config so they can change per market without code changes.
     platform_commission_rate: Decimal = Decimal("0.12")
+    currency: str = "SAR"
+
+    # Local-disk media storage (swap for S3/R2 in app/core/storage.py).
+    media_dir: str = "./media"
+    media_base_url: str = "http://localhost:8000/media"
+    max_upload_bytes: int = 5 * 1024 * 1024
 
     @property
     def cors_origin_list(self) -> list[str]:

@@ -2,63 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Brand tokens (blueprint 7.3), as RGB triplets so Tailwind can apply opacity. */
-:root {
-  --color-gold: 201 162 39; /* Thread Gold #C9A227: fills, accents. Not for text on light bg. */
-  --color-gold-ink: 127 100 16; /* Darkened gold for text/focus on cream: 5.2:1 contrast. */
-  --color-ink: 27 42 74; /* Deep Indigo #1B2A4A */
-  --color-cream: 250 247 242; /* Warm Cream #FAF7F2 */
-  --color-charcoal: 45 45 45; /* #2D2D2D */
-  --color-olive: 107 127 89;
-  --color-clay: 184 125 90;
-  /* Warm Grey darkened from #8A8178 (3.6:1) to #6E665E (5.3:1) to meet WCAG AA for text. */
-  --color-muted: 110 102 94;
-  --color-mist: 232 238 245;
-  --color-surface: 255 255 255;
-  --color-line: 229 223 214;
-
-  --color-success: 46 125 91;
-  --color-warning: 199 125 46;
-  --color-danger: 179 58 58;
-  --color-info: 58 110 165;
-}
-
-/* Typography (blueprint 7.4): Arabic uses IBM Plex Sans Arabic throughout;
-   English pairs Playfair Display headings with Inter body. */
-html[lang='ar'] {
-  --font-body: var(--font-arabic);
-  --font-heading: var(--font-arabic);
-}
-html[lang='en'] {
-  --font-body: var(--font-inter), var(--font-arabic);
-  --font-heading: var(--font-playfair);
-}
-
 @layer base {
-  html {
-    @apply bg-cream text-charcoal antialiased;
-    -webkit-text-size-adjust: 100%;
+  :root {
+    /* Brand Theme Hex Codes from Blueprint Section 7.3 */
+    --color-gold: 201 162 39;      /* #C9A227 - Thread Gold */
+    --color-gold-ink: 168 132 20;  /* Darker Gold for accessible text on light bg */
+    --color-ink: 27 42 74;         /* #1B2A4A - Deep Indigo */
+    --color-cream: 250 247 242;    /* #FAF7F2 - Warm Cream */
+    --color-charcoal: 45 45 45;    /* #2D2D2D - Charcoal */
+    --color-olive: 107 127 89;     /* #6B7F59 - Olive */
+    --color-clay: 184 125 90;      /* #B87D5A - Clay */
+    --color-muted: 138 129 120;    /* #8A8178 - Warm Grey */
+    --color-mist: 232 238 245;     /* #E8EEF5 - Light Blue */
+    --color-surface: 255 255 255;  /* White */
+    --color-line: 229 231 235;     /* Border grey */
+
+    /* State colors */
+    --color-success: 46 125 91;    /* #2E7D5B */
+    --color-warning: 199 125 46;   /* #C77D2E */
+    --color-danger: 179 58 58;     /* #B33A3A */
+    --color-info: 58 110 165;      /* #3A6EA5 */
+
+    --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-heading: Georgia, 'Times New Roman', serif;
   }
+
   body {
-    @apply font-sans text-body-m;
-  }
-  h1,
-  h2,
-  h3 {
-    @apply font-display text-ink;
-  }
-  :focus-visible {
-    outline: 2px solid rgb(var(--color-gold-ink));
-    outline-offset: 2px;
-    border-radius: 4px;
+    background-color: rgb(var(--color-cream));
+    color: rgb(var(--color-charcoal));
+    font-family: var(--font-body);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+/* Custom scrollbar & interactive polish */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-cream));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-muted) / 0.5);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-gold));
 }

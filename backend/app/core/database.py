@@ -1,6 +1,6 @@
 import uuid
 from collections.abc import Iterator
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime, MetaData, Uuid, create_engine, event, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
@@ -25,12 +25,27 @@ class UUIDPrimaryKey:
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
 
 
+def _utcnow() -> datetime:
+    # Naive UTC: SQLite drops tzinfo on round-trip regardless, so a naive Python-side
+    # default keeps a freshly-inserted object's value consistent with one re-read from the
+    # DB later (an aware value here would serialize with a "Z" suffix in-process but not
+    # after a re-fetch, corrupting equality checks against re-fetched rows).
+    return datetime.now(UTC).replace(tzinfo=None)
+
+
 class Timestamps:
+    # Python-side defaults (not just server_default) give microsecond precision on every
+    # backend, including SQLite's second-resolution CURRENT_TIMESTAMP -- without them, rows
+    # inserted within the same second are unorderable by created_at alone.
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime(timezone=True), default=_utcnow, server_default=func.now(), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+        DateTime(timezone=True),
+        default=_utcnow,
+        onupdate=_utcnow,
+        server_default=func.now(),
+        nullable=False,
     )
 
 

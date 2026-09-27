@@ -1,62 +1,81 @@
 {
-  "meta": {
-    "title": "Khayyat — Your clothes. Your tailor. Your way.",
-    "description": "One platform for customers, tailors, fabric sellers and delivery."
-  },
   "brand": {
-    "name": "Khayyat"
+    "name": "Khayyat",
+    "nameEn": "Khayyat",
+    "tagline": "Your clothes. Your tailor. Your way.",
+    "subtagline": "From a simple hem to a full custom dress, from rare fabric to doorstep delivery — Khayyat brings it all together."
   },
   "nav": {
-    "label": "Main navigation",
+    "home": "Home",
     "tailors": "Tailors",
-    "howItWorks": "How it works",
-    "forTailors": "For tailors",
-    "requestService": "Request a service",
-    "skipToContent": "Skip to content"
+    "fabrics": "Fabric Marketplace",
+    "requests": "Service Requests",
+    "orders": "My Orders",
+    "login": "Sign In",
+    "register": "Join Us",
+    "postRequest": "Request Service"
   },
-  "locale": {
-    "switchTo": "العربية",
-    "switchLabel": "التبديل إلى العربية"
+  "hero": {
+    "title": "Your clothes. Your tailor. Your way.",
+    "subtitle": "From a simple hem to a full custom dress, from rare fabric to doorstep delivery — Khayyat brings it all together.",
+    "ctaRequest": "Request a Service",
+    "ctaBrowse": "Browse Tailors"
   },
-  "home": {
-    "hero": {
-      "title": "Your clothes. Your tailor. Your way.",
-      "subtitle": "From a simple hem to a full custom suit, from rare fabric to doorstep delivery — Khayyat brings it all together.",
-      "primaryCta": "Request a service",
-      "secondaryCta": "Browse tailors"
-    },
-    "services": {
-      "title": "What do you need?",
-      "alteration": { "name": "Alteration", "description": "Hem, take in, let out — your exact fit." },
-      "repair": { "name": "Repair", "description": "Zips, buttons, tears — good as new." },
-      "custom": { "name": "Custom", "description": "Thobe, suit, dress — made for you from scratch." },
-      "fabric": { "name": "Fabrics", "description": "Browse fabric from trusted sellers.", "badge": "Coming soon" }
-    },
-    "steps": {
-      "title": "How Khayyat works",
-      "one": { "title": "Request", "description": "Describe what you need, add a photo and your location." },
-      "two": { "title": "Compare quotes", "description": "Nearby tailors send their price and turnaround." },
-      "three": { "title": "Receive & review", "description": "Track every stage, then tell us how it went." }
-    },
-    "tailors": {
-      "title": "Are you a tailor?",
-      "description": "Steady requests from your area, a portfolio for your work, and earnings tracking — no hidden fees.",
-      "cta": "Join as a tailor"
-    }
+  "categories": {
+    "title": "What do you need today?",
+    "alteration": "Alterations & Fit",
+    "alterationDesc": "Shorten pants, taper a dress, or adjust sizing with precision",
+    "repair": "Repair & Restore",
+    "repairDesc": "Replace zippers, patch fabrics, or restore your favorite garments",
+    "custom": "Custom Tailoring",
+    "customDesc": "Design and tailor custom suits, dresses, or traditional attire",
+    "fabric": "Buy Fabrics",
+    "fabricDesc": "Browse and buy premium fabrics directly from local shops"
+  },
+  "howItWorks": {
+    "title": "How Khayyat Works",
+    "step1Title": "1. Post Your Request",
+    "step1Desc": "Specify your service, upload details or photos, and set your location in seconds",
+    "step2Title": "2. Receive Quotes",
+    "step2Desc": "Get competitive pricing and timeframe offers from top local tailors",
+    "step3Title": "3. Choose & Track",
+    "step3Desc": "Pick the best quote, pay securely, and track your order step-by-step"
+  },
+  "tailors": {
+    "title": "Featured Professional Tailors",
+    "subtitle": "Verified tailors with proven craftsmanship and real customer reviews",
+    "viewProfile": "View Profile",
+    "requestQuote": "Request Quote",
+    "rating": "Rating",
+    "ordersCompleted": "orders completed",
+    "verified": "Verified",
+    "searchPlaceholder": "Search tailors by name, specialty, or city...",
+    "allSpecialties": "All Specialties",
+    "menTailoring": "Men's Tailoring",
+    "womenTailoring": "Women's Tailoring",
+    "alterations": "Alterations & Repair"
+  },
+  "requests": {
+    "title": "Post a New Service Request",
+    "subtitle": "Receive personalized quotes from experienced local tailors",
+    "category": "Service Category",
+    "titleLabel": "Request Title",
+    "titlePlaceholder": "e.g., Shorten 2 jeans and taper waist",
+    "descriptionLabel": "Details & Notes",
+    "descriptionPlaceholder": "Describe your requirements in detail...",
+    "budgetLabel": "Estimated Budget (Optional)",
+    "deliveryLabel": "Do you need delivery?",
+    "yes": "Yes, include pickup & delivery",
+    "no": "No, I will handle pickup",
+    "submit": "Publish Request & Get Quotes"
   },
   "comingSoon": {
-    "badge": "In progress",
-    "title": "This page is being built",
-    "description": "We're working on it now and it will be available soon. We never show features that don't really work.",
-    "back": "Back to home"
-  },
-  "pages": {
-    "tailors": "Tailors",
-    "newRequest": "New service request",
-    "joinAsTailor": "Join as a tailor"
+    "title": "Coming Soon",
+    "subtitle": "We are building this feature to make your tailoring experience seamless!",
+    "backHome": "Back to Home"
   },
   "footer": {
-    "tagline": "Binding craftsmanship to technology without losing its soul.",
-    "rights": "© {year} Khayyat. All rights reserved."
+    "rights": "All rights reserved Khayyat Platform",
+    "tagline": "The digital infrastructure for garment crafting in the Arab world."
   }
 }

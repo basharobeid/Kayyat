@@ -5,6 +5,7 @@
 
 # Python
 .venv/
+.venv_*/
 __pycache__/
 *.pyc
 *.egg-info/
@@ -21,3 +22,7 @@ out/
 # OS / editors
 .DS_Store
 Thumbs.db
+media/
+
+# Orphaned duplicate of frontend/public/ left over from scaffolding; not served by anything.
+/public/
