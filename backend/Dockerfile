@@ -14,7 +14,7 @@ COPY alembic.ini ./
 COPY alembic ./alembic
 COPY scripts ./scripts
 
-RUN useradd --create-home khayyat
+RUN useradd --create-home khayyat && mkdir -p /app/media && chown -R khayyat:khayyat /app
 USER khayyat
 
 EXPOSE 8000
