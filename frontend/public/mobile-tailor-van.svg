@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FAF7F2"/>
+      <stop offset="100%" stop-color="#F0EAE0"/>
+    </linearGradient>
+    <linearGradient id="vanBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#22345C"/>
+      <stop offset="100%" stop-color="#1B2A4A"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#C9A227"/>
+      <stop offset="100%" stop-color="#E4C25C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="480" fill="url(#sky)"/>
+
+  <!-- Ground -->
+  <rect x="0" y="400" width="800" height="80" fill="#E8EEF5"/>
+  <rect x="0" y="398" width="800" height="4" fill="#D8C9A3"/>
+
+  <!-- House -->
+  <g transform="translate(70,230)">
+    <rect x="0" y="60" width="150" height="110" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+    <polygon points="-10,60 75,10 160,60" fill="#B87D5A"/>
+    <rect x="20" y="100" width="35" height="35" fill="#E8EEF5" stroke="#8A8178" stroke-width="2"/>
+    <rect x="95" y="90" width="35" height="80" fill="#6B7F59" stroke="#8A8178" stroke-width="2"/>
+    <circle cx="122" cy="130" r="2.5" fill="#FAF7F2"/>
+  </g>
+
+  <!-- Motion lines -->
+  <g stroke="#8A8178" stroke-width="4" stroke-linecap="round" opacity="0.35">
+    <line x1="330" y1="330" x2="360" y2="330"/>
+    <line x1="320" y1="350" x2="358" y2="350"/>
+    <line x1="335" y1="370" x2="362" y2="370"/>
+  </g>
+
+  <!-- Van -->
+  <g transform="translate(390,180)">
+    <!-- shadow -->
+    <ellipse cx="185" cy="222" rx="200" ry="14" fill="#1B2A4A" opacity="0.10"/>
+
+    <!-- body -->
+    <path d="M10,180 L10,70 Q10,55 25,55 L230,55 Q245,55 255,68 L318,120 Q330,132 330,150 L330,180 Z" fill="url(#vanBody)"/>
+    <!-- cab window -->
+    <path d="M235,68 L300,116 L235,116 Z" fill="#CFE0F2" opacity="0.9"/>
+    <!-- cargo panel accent -->
+    <rect x="26" y="70" width="185" height="95" rx="10" fill="#243A66"/>
+
+    <!-- gold ribbon / brand stripe -->
+    <rect x="10" y="150" width="320" height="14" fill="url(#gold)"/>
+
+    <!-- scissors + needle emblem on side panel -->
+    <g transform="translate(70,95)" stroke="#C9A227" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="0" cy="28" r="7"/>
+      <circle cx="0" cy="0" r="7"/>
+      <line x1="6" y1="6" x2="34" y2="34"/>
+      <line x1="6" y1="22" x2="34" y2="-6"/>
+    </g>
+    <text x="105" y="120" font-family="Georgia, serif" font-size="26" fill="#FAF7F2" font-weight="bold">خيّاط</text>
+
+    <!-- open rear door revealing a mini workshop -->
+    <rect x="330" y="150" width="0" height="0"/>
+
+    <!-- wheels -->
+    <circle cx="70" cy="182" r="26" fill="#2D2D2D"/>
+    <circle cx="70" cy="182" r="10" fill="#8A8178"/>
+    <circle cx="270" cy="182" r="26" fill="#2D2D2D"/>
+    <circle cx="270" cy="182" r="10" fill="#8A8178"/>
+  </g>
+
+  <!-- Tailor figure with tape measure, mid-fitting -->
+  <g transform="translate(280,300)">
+    <!-- customer -->
+    <circle cx="0" cy="0" r="16" fill="#B87D5A"/>
+    <rect x="-14" y="14" width="28" height="60" rx="10" fill="#6B7F59"/>
+
+    <!-- tailor -->
+    <g transform="translate(90,10)">
+      <circle cx="0" cy="0" r="16" fill="#E8C8A0"/>
+      <rect x="-15" y="14" width="30" height="58" rx="10" fill="#1B2A4A"/>
+      <!-- measuring tape between tailor and customer -->
+      <path d="M-70,45 Q-35,20 -5,42" stroke="#C9A227" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Caption chip -->
+  <g transform="translate(400,430)">
+    <rect x="-190" y="-18" width="380" height="34" rx="17" fill="#18181B"/>
+    <text x="0" y="4" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">
+      خيّاط متنقل: قياس شخصي بالمنزل ثم تفصيل فوري أو بالمشغل
+    </text>
+  </g>
+</svg>

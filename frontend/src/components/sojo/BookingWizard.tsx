@@ -39,7 +39,7 @@ export const BookingWizard: React.FC = () => {
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [city, setCity] = useState<CitySlug>('riyadh');
-  const [fulfillment, setFulfillment] = useState<'delivery' | 'dropoff'>('delivery');
+  const [fulfillment, setFulfillment] = useState<'delivery' | 'dropoff' | 'van_visit'>('delivery');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [createdRequest, setCreatedRequest] = useState<RequestItem | null>(null);
@@ -85,14 +85,18 @@ export const BookingWizard: React.FC = () => {
       const categoryName = isAr ? selectedCategory.name_ar : selectedCategory.name_en;
       const serviceName = isAr ? selectedService.name_ar : selectedService.name_en;
       const title = `${categoryName} — ${serviceName}`.slice(0, 120);
-      const description = notes.trim() || `${serviceName} (${categoryName})`;
+      const vanNote = isAr
+        ? ' [طلب زيارة الخيّاط المتنقل: القياس شخصياً في المنزل]'
+        : ' [Mobile tailor van requested: in-person home measurement]';
+      let description = notes.trim() || `${serviceName} (${categoryName})`;
+      if (fulfillment === 'van_visit') description += vanNote;
       const request = await requestsApi.create({
         service_id: selectedService.id,
         title,
         description: description.length >= 10 ? description : description.padEnd(10, '.'),
         city,
-        needs_pickup: fulfillment === 'delivery',
-        needs_delivery: fulfillment === 'delivery',
+        needs_pickup: fulfillment !== 'dropoff',
+        needs_delivery: fulfillment !== 'dropoff',
         photo_urls: photoUrls,
       });
       setCreatedRequest(request);
@@ -410,7 +414,7 @@ export const BookingWizard: React.FC = () => {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div
               onClick={() => setFulfillment('delivery')}
               className={`p-5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
@@ -418,15 +422,32 @@ export const BookingWizard: React.FC = () => {
               }`}
             >
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl">🚚</span>
-                  <Badge variant="gold">{isAr ? 'الأكثر راحة' : 'Most popular'}</Badge>
-                </div>
+                <span className="text-2xl">🚚</span>
                 <h3 className="font-bold text-h3 text-ink">{isAr ? 'توصيل واستلام من الباب' : 'Doorstep pickup & return'}</h3>
                 <p className="text-body-s text-muted">
                   {isAr
-                    ? 'الخيّاط يرتب استلام القطعة منك وتوصيلها بعد الانتهاء.'
-                    : 'The tailor arranges pickup and return once the work is done.'}
+                    ? 'مندوب يستلم القطعة منك ويوصلها بعد الانتهاء.'
+                    : 'A courier picks up the item and returns it once the work is done.'}
+                </p>
+              </div>
+            </div>
+
+            <div
+              onClick={() => setFulfillment('van_visit')}
+              className={`p-5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
+                fulfillment === 'van_visit' ? 'border-gold bg-gold/15 ring-2 ring-gold/40 shadow-sm' : 'border-line hover:bg-mist'
+              }`}
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">🚐</span>
+                  <Badge variant="gold">{isAr ? 'جديد' : 'New'}</Badge>
+                </div>
+                <h3 className="font-bold text-h3 text-ink">{isAr ? 'الخيّاط المتنقل (فان)' : 'Mobile tailor van'}</h3>
+                <p className="text-body-s text-muted">
+                  {isAr
+                    ? 'الخيّاط يأتي لبيتك بالفان ويأخذ قياسك شخصياً، ثم يفصّل القطعة في الفان أو يأخذها للمشغل ويعيدها.'
+                    : 'The tailor drives to you, measures you in person, then either alters it on the spot or takes it to the workshop and returns it.'}
                 </p>
               </div>
             </div>

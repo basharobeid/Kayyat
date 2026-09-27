@@ -141,6 +141,49 @@ export default function RequestsPage() {
         </div>
       </div>
 
+      {/* Mobile Tailor Van Showcase */}
+      <div className="bg-white rounded-3xl border border-line/80 shadow-sm overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center">
+          <div className="bg-cream">
+            <img
+              src="/mobile-tailor-van.svg"
+              alt={isAr ? 'الخيّاط المتنقل يزور المنزل بالفان' : 'Mobile tailor van visiting a home'}
+              className="w-full h-auto"
+            />
+          </div>
+          <div className="p-8 md:p-10 space-y-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 text-gold-ink text-xs font-bold w-fit">
+              🚐 {isAr ? 'خدمة جديدة' : 'New service'}
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
+              {isAr ? 'خدمة الخيّاط المتنقل' : 'The Mobile Tailor Van'}
+            </h2>
+            <p className="text-sm sm:text-base text-muted leading-relaxed">
+              {isAr
+                ? 'ما عاد داعي تروح ع المحل! خيّاطنا بيجيك للبيت بفان مجهّز، وياخذ قياسك بنفسه على الطبيعة بدل الدبابيس. حسب نوع الشغلة، إما يفصّل القطعة فوراً بالفان وترجعلك جاهزة بنفس الزيارة، أو ياخذها معه ع المشغل لتفصيل أدق ويرجعلك ياها خلال أيام.'
+                : "No need to visit a shop. Our tailor drives straight to your door in a fully equipped van and takes your measurements in person. Depending on the job, they'll either alter the piece on the spot during that same visit, or take it back to the workshop for more detailed work and return it within days."}
+            </p>
+            <ul className="space-y-2.5 pt-1">
+              {[
+                isAr ? 'قياس شخصي دقيق بدل الدبابيس أو الصور' : 'Precise in-person measuring, not just pins or photos',
+                isAr ? 'تفصيل فوري بالفان للشغلات البسيطة' : 'On-the-spot alterations in the van for simple jobs',
+                isAr ? 'أو نقل القطعة للمشغل للتفصيل الدقيق وإعادتها لباب بيتك' : 'Or a trip to the workshop for detailed work, returned to your door',
+              ].map((item, idx) => (
+                <li key={idx} className="flex items-start gap-2.5 text-sm text-ink font-medium">
+                  <span className="w-5 h-5 rounded-full bg-gold/20 text-gold-ink flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-muted pt-1">
+              {isAr
+                ? 'اختر "الخيّاط المتنقل (فان)" في خطوة الاستلام والتسليم أدناه لطلب هذه الخدمة.'
+                : 'Choose "Mobile tailor van" in the fulfillment step below to request this service.'}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Booking Wizard Interactive Container */}
       <div className="pt-2">
         <BookingWizard />
