@@ -1,13 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
-import { TiltCard } from '@/components/ui/TiltCard';
-import { MagneticButton } from '@/components/ui/MagneticButton';
-import { StitchLine } from '@/components/ui/StitchLine';
 import { catalogApi } from '@/lib/api';
 import { PriceGuide } from '@/components/features/PriceGuide';
 
@@ -15,42 +12,10 @@ import { PriceGuide } from '@/components/features/PriceGuide';
 // cold-starting) so the marketing page never shows a broken/empty stats row.
 const FALLBACK_STATS = { services: 18, cities: 10, categories: 3 };
 
-type HeroWord = { t: string; gold?: boolean };
-const HERO_WORDS: Record<'ar' | 'en', HeroWord[][]> = {
-  ar: [
-    [{ t: 'الملابس' }, { t: 'صنعت', gold: true }, { t: 'لتدوم.', gold: true }],
-    [{ t: 'ونحن' }, { t: 'هنا' }, { t: 'لنضمن' }, { t: 'ذلك.' }],
-  ],
-  en: [
-    [{ t: 'Clothes' }, { t: 'are' }, { t: 'made', gold: true }, { t: 'to', gold: true }, { t: 'last.', gold: true }],
-    [{ t: 'We' }, { t: 'make' }, { t: 'sure' }, { t: 'they' }, { t: 'do.' }],
-  ],
-};
-
-const KINETIC_WORDS = {
-  ar: ['تقصير', 'تضييق', 'تفصيل', 'تطريز', 'ترميم', 'تبديل سحاب', 'عبايات', 'ثياب', 'بشوت', 'فساتين سهرة'],
-  en: ['Hemming', 'Tailoring', 'Repairs', 'Embroidery', 'Abayas', 'Thobes', 'Bisht', 'Evening wear', 'Zippers', 'Resizing'],
-};
-
 export default function HomePage() {
   const locale = useLocale();
   const isAr = locale === 'ar';
   const [stats, setStats] = useState(FALLBACK_STATS);
-  const heroRef = useRef<HTMLElement>(null);
-  const [heroReady, setHeroReady] = useState(false);
-
-  const onHeroMove = (e: React.MouseEvent<HTMLElement>) => {
-    const el = heroRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty('--mx', `${e.clientX - r.left}px`);
-    el.style.setProperty('--my', `${e.clientY - r.top}px`);
-  };
-
-  useEffect(() => {
-    const t = setTimeout(() => setHeroReady(true), 700);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     Promise.all([catalogApi.services(), catalogApi.meta()])
@@ -72,101 +37,63 @@ export default function HomePage() {
       {/* ─────────────────────────────────────────────────────────────
           1. HERO SECTION (Directly matching Screenshot 5)
          ───────────────────────────────────────────────────────────── */}
-      <section
-        ref={heroRef}
-        onMouseMove={onHeroMove}
-        className="grain relative min-h-[100vh] flex items-center justify-center text-center overflow-hidden px-4 bg-[#0B0D12]"
-      >
-        {/* Photography with a slow continuous Ken Burns drift */}
+      <section className="relative min-h-[92vh] flex items-center justify-center text-center overflow-hidden px-4">
+        {/* Editorial Fashion Photography Background with a slow continuous Ken Burns drift */}
         <div
-          className="absolute inset-0 bg-cover bg-center animate-ken-burns opacity-60"
-          style={{ backgroundImage: `url('/G4cfAEDulUqxGAMCOM4atCL63M.jpeg')` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0D12]/70 via-[#0B0D12]/40 to-[#0B0D12]" />
-        {/* Gold light that follows the cursor */}
-        <div
-          className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+          className="absolute inset-0 bg-cover bg-center -z-10 animate-ken-burns"
           style={{
-            background:
-              'radial-gradient(600px circle at var(--mx, 50%) var(--my, 40%), rgba(201,162,39,0.22), transparent 60%)',
+            backgroundImage: `url('/G4cfAEDulUqxGAMCOM4atCL63M.jpeg')`,
           }}
         />
+        {/* Soft luxury editorial overlay to guarantee crisp text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/60 -z-10" />
 
-        {/* Floating glass chips (desktop) — real services, not invented claims */}
-        <div className="hidden lg:flex glass absolute top-[24%] start-[6%] rounded-2xl px-4 py-3 items-center gap-3 text-white animate-float">
-          <span className="text-2xl">🚐</span>
-          <div className="text-start">
-            <p className="text-sm font-semibold">{isAr ? 'خيّاط متنقل' : 'Mobile tailor'}</p>
-            <p className="text-xs text-white/60">{isAr ? 'قياس ببيتك' : 'Measured at home'}</p>
-          </div>
-        </div>
-        <div
-          className="hidden lg:flex glass absolute bottom-[16%] end-[6%] rounded-2xl px-4 py-3 items-center gap-3 text-white animate-float"
-          style={{ animationDelay: '1.5s' }}
-        >
-          <span className="text-2xl">🧵</span>
-          <div className="text-start">
-            <p className="text-sm font-semibold">{isAr ? 'عروض من عدة خيّاطين' : 'Quotes from many tailors'}</p>
-            <p className="text-xs text-white/60">{isAr ? 'قارن واختار الأنسب' : 'Compare, then choose'}</p>
-          </div>
-        </div>
+        <div className="max-w-4xl mx-auto pt-24 pb-16 space-y-7 text-white">
 
-        <div className="relative max-w-5xl mx-auto pt-28 pb-20 space-y-8 text-white">
-          <div className="rise inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-[0.8125rem] font-medium">
-            <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-            {isAr ? 'خيّاط — منصة الخياطة والتعديل الأولى' : 'KHAYYAT — the tailoring platform'}
+          {/* Floating Pill Announcement Tag */}
+          <div className="reveal is-visible inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/25 shadow-sm text-[0.8125rem] font-medium transition-all cursor-pointer animate-float">
+            <span>
+              {isAr
+                ? 'خيّاط × أرقى خدمات العناية بالملابس ✦ اكتشف المزيد'
+                : 'KHAYYAT is here. Learn more →'}
+            </span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold leading-[1.15] max-w-4xl mx-auto">
-            {(isAr ? HERO_WORDS.ar : HERO_WORDS.en).map((line, li) => (
-              <span key={li} className="block">
-                {line.map((w, wi) => {
-                  const delay = 150 + (li * 3 + wi) * 110;
-                  return (
-                    <span key={wi} className="word-rise me-[0.25em]" style={{ animationDelay: `${delay}ms` }}>
-                      <span className={w.gold ? 'text-gold-gradient' : li === 1 ? 'font-normal text-white/85' : ''}>
-                        {w.t}
-                      </span>
-                    </span>
-                  );
-                })}
-              </span>
-            ))}
+          {/* Big Editorial Headline */}
+          <h1 className="reveal is-visible text-4xl sm:text-6xl md:text-7xl font-sans font-bold tracking-tight leading-[1.08] max-w-3xl mx-auto drop-shadow-sm" style={{ animationDelay: '120ms' }}>
+            {isAr ? (
+              <>
+                الملابس <span className="text-gold-gradient">صُنعت لتدوم</span>. <br />
+                <span className="font-normal opacity-95">ونحن هنا لنضمن ذلك.</span>
+              </>
+            ) : (
+              <>
+                Clothes are <span className="text-gold-gradient">made to last</span>. <br />
+                <span className="font-normal opacity-95">We make sure they do.</span>
+              </>
+            )}
           </h1>
 
-          {/* Gold thread sewing itself under the headline */}
-          <div className={`stitch-draw max-w-md mx-auto ${heroReady ? 'is-visible' : ''}`}>
-            <svg viewBox="0 0 400 24" className="w-full h-6" aria-hidden="true">
-              <path d="M4 12 Q 100 2, 200 12 T 396 12" className="stitch-path" stroke="rgb(var(--color-gold))" strokeWidth="2" strokeLinecap="round" fill="none" />
-            </svg>
-          </div>
+          {/* Dual Pill CTA Buttons (Exact match to Sojo Screenshot 5) */}
+          <div className="reveal is-visible flex flex-col sm:flex-row items-center justify-center gap-3 pt-4" style={{ animationDelay: '240ms' }}>
+            {/* Fix an item Pill (Frosted Light) */}
+            <Link href="/requests">
+              <span className="btn-shine inline-flex items-center justify-center px-7 py-3 rounded-full text-[0.9375rem] font-semibold text-[#18181B] bg-white/90 hover:bg-white backdrop-blur-md shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
+                {isAr ? 'عدّل قطعة الآن' : 'Fix an item'}
+              </span>
+            </Link>
 
-          <p className="rise text-base sm:text-lg text-white/70 max-w-xl mx-auto leading-relaxed" style={{ animationDelay: '900ms' }}>
-            {isAr
-              ? 'اطلب تعديل أو تفصيل، استلم عروض من خيّاطين معتمدين، واختار — استلام من بيتك أو خيّاط بيجيك بالفان.'
-              : 'Request an alteration, get quotes from vetted tailors, and pick one — doorstep pickup or a tailor who comes to you.'}
-          </p>
-
-          <div className="rise flex flex-col sm:flex-row items-center justify-center gap-4 pt-2" style={{ animationDelay: '1050ms' }}>
-            <MagneticButton>
-              <Link href="/requests">
-                <span className="btn-shine inline-flex items-center gap-2 px-8 py-4 rounded-full text-base font-bold text-[#0B0D12] bg-gold hover:bg-[#dcb53a] shadow-[0_10px_40px_rgba(201,162,39,0.45)] transition-colors">
-                  {isAr ? 'عدّل قطعة الآن' : 'Fix an item'} <span aria-hidden="true">{isAr ? '←' : '→'}</span>
-                </span>
-              </Link>
-            </MagneticButton>
-            <MagneticButton>
-              <Link href="/dashboard/tailor">
-                <span className="glass inline-flex items-center px-8 py-4 rounded-full text-base font-semibold text-white hover:bg-white/15 transition-colors">
-                  {isAr ? 'انضم كخيّاط شريك' : 'Join as a tailor'}
-                </span>
-              </Link>
-            </MagneticButton>
+            {/* Partner with us Pill (Solid Charcoal/Black) */}
+            <Link href="/dashboard/tailor">
+              <span className="btn-shine inline-flex items-center justify-center px-7 py-3 rounded-full text-[0.9375rem] font-semibold text-white bg-[#18181B]/95 hover:bg-black backdrop-blur-md shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
+                {isAr ? 'انضم كشريك' : 'Partner with us'}
+              </span>
+            </Link>
           </div>
         </div>
 
         {/* Scroll cue */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 animate-chevron">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 animate-chevron">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
@@ -177,8 +104,8 @@ export default function HomePage() {
           BY THE NUMBERS
          ───────────────────────────────────────────────────────────── */}
       <RevealOnScroll>
-        <section className="max-w-5xl mx-auto px-4 -mt-20 relative z-10">
-          <div className="bg-white rounded-3xl shadow-[0_30px_80px_-20px_rgba(11,13,18,0.35)] border-t-4 border-gold grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-line/60 rtl:divide-x-reverse overflow-hidden">
+        <section className="max-w-5xl mx-auto px-4 -mt-12 relative z-10">
+          <div className="bg-white rounded-3xl shadow-xl border border-line/60 grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-line/60 rtl:divide-x-reverse overflow-hidden">
             {[
               { value: stats.services, suffix: '+', labelAr: 'خدمة تعديل وإصلاح', labelEn: 'Alteration & repair services' },
               { value: stats.cities, suffix: '', labelAr: 'مدينة مغطاة', labelEn: 'Cities covered' },
@@ -220,36 +147,6 @@ export default function HomePage() {
       </RevealOnScroll>
 
       {/* ─────────────────────────────────────────────────────────────
-          KINETIC TYPE — the services, in huge moving outline letters
-         ───────────────────────────────────────────────────────────── */}
-      <section className="space-y-2 overflow-hidden select-none" aria-hidden="true">
-        {[0, 1].map((row) => (
-          <div key={row} className={`marquee marquee-slow ${row === 1 ? 'marquee-reverse' : ''}`}>
-            <div className="marquee-track items-center">
-              {[0, 1].map((copy) => (
-                <div key={copy} className="flex items-center gap-10 pe-10 whitespace-nowrap">
-                  {(isAr ? KINETIC_WORDS.ar : KINETIC_WORDS.en).map((w, i) => (
-                    <React.Fragment key={i}>
-                      <span
-                        className={`font-display text-6xl sm:text-8xl font-bold ${
-                          (i + row) % 3 === 0 ? 'text-outline-gold' : 'text-outline'
-                        }`}
-                      >
-                        {w}
-                      </span>
-                      <span className="text-gold text-3xl">✦</span>
-                    </React.Fragment>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
-
-      <StitchLine />
-
-      {/* ─────────────────────────────────────────────────────────────
           3. "WHAT WE DO" SECTION (Matching Screenshots 1 & 2)
          ───────────────────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 space-y-24">
@@ -259,7 +156,7 @@ export default function HomePage() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
             {isAr ? 'ماذا نقدم' : 'What we do'}
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-sans font-bold text-[#18181B] tracking-tight">
             {isAr
               ? 'منصة التعديل والصيانة الاحترافية المعتمدة'
               : "We're the expert alterations and repair platform"}
@@ -274,7 +171,7 @@ export default function HomePage() {
         {/* Split 1: SOJO for customers (Screenshot 1) */}
         <RevealOnScroll className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="space-y-6">
-            <h3 className="text-3xl sm:text-4xl font-bold text-[#18181B] tracking-tight">
+            <h3 className="text-3xl sm:text-4xl font-sans font-bold text-[#18181B] tracking-tight">
               {isAr ? 'خيّاط للأفراد' : 'SOJO for customers'}
             </h3>
             <p className="text-base sm:text-lg text-[#52525B] leading-relaxed">
@@ -330,7 +227,7 @@ export default function HomePage() {
 
           {/* Brand Details */}
           <div className="order-1 lg:order-2 space-y-6">
-            <h3 className="text-3xl sm:text-4xl font-bold text-[#18181B] tracking-tight">
+            <h3 className="text-3xl sm:text-4xl font-sans font-bold text-[#18181B] tracking-tight">
               {isAr ? 'خيّاط للمتاجر والعلامات' : 'SOJO for brands'}
             </h3>
             <p className="text-base sm:text-lg text-[#52525B] leading-relaxed">
@@ -365,8 +262,6 @@ export default function HomePage() {
         </RevealOnScroll>
       </section>
 
-      <StitchLine />
-
       {/* ─────────────────────────────────────────────────────────────
           TWO WAYS TO GET IT DONE
          ───────────────────────────────────────────────────────────── */}
@@ -381,8 +276,7 @@ export default function HomePage() {
         </RevealOnScroll>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <RevealOnScroll>
-          <TiltCard className="group rounded-3xl overflow-hidden bg-[#14171F] text-white shadow-xl flex flex-col">
+          <RevealOnScroll className="group rounded-3xl overflow-hidden bg-[#14171F] text-white shadow-xl flex flex-col">
             <div className="bg-cream overflow-hidden">
               <img
                 src="/mobile-tailor-van.svg"
@@ -408,11 +302,9 @@ export default function HomePage() {
                 </span>
               </Link>
             </div>
-          </TiltCard>
           </RevealOnScroll>
 
-          <RevealOnScroll delayMs={120}>
-          <TiltCard className="group rounded-3xl overflow-hidden bg-white border border-line/80 shadow-xl flex flex-col">
+          <RevealOnScroll className="group rounded-3xl overflow-hidden bg-white border border-line/80 shadow-xl flex flex-col" delayMs={120}>
             <div className="overflow-hidden aspect-[5/3]">
               <img
                 src="/AGI6JHG4ojGjbREnbz8H9K897g.png"
@@ -438,7 +330,6 @@ export default function HomePage() {
                 </span>
               </Link>
             </div>
-          </TiltCard>
           </RevealOnScroll>
         </div>
       </section>
@@ -468,7 +359,7 @@ export default function HomePage() {
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
             {isAr ? 'حلولنا' : 'Our solutions'}
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-sans font-bold text-[#18181B] tracking-tight">
             {isAr ? 'منظومة عملنا مع العلامات التجارية' : 'Our work with brands'}
           </h2>
           <p className="text-lg text-[#71717A] max-w-xl mx-auto leading-relaxed">
@@ -538,8 +429,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <StitchLine />
-
       {/* ─────────────────────────────────────────────────────────────
           5. DARK MODE "KEY FEATURES" (Directly matching Screenshot 4)
          ───────────────────────────────────────────────────────────── */}
@@ -563,7 +452,7 @@ export default function HomePage() {
             <span className="inline-block px-3.5 py-1 rounded-full bg-white/10 text-[0.8125rem] font-medium text-white/90 border border-white/15">
               {isAr ? 'أبرز المزايا' : 'Key Features'}
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+            <h2 className="text-3xl sm:text-5xl font-sans font-bold tracking-tight text-white">
               {isAr
                 ? 'لماذا تختار كبرى دور الأزياء منصة خيّاط'
                 : 'Why the biggest names in fashion choose KHAYYAT'}
@@ -579,8 +468,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
 
             {/* Card 1 */}
-            <RevealOnScroll>
-            <TiltCard className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all">
+            <RevealOnScroll className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all">
               <div className="w-10 h-10 flex items-center justify-center text-white">
                 <svg className="w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.75">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -594,12 +482,10 @@ export default function HomePage() {
                   ? 'نبني نموذج عمل ملموس مع كل شريك تجاري يقلل من مرتجعات المقاسات ويرفع نسبة رضا وولاء العملاء.'
                   : 'We build real business cases with every brand partner — identifying genuine challenges and delivering measurable results that go well beyond customer experience.'}
               </p>
-            </TiltCard>
             </RevealOnScroll>
 
             {/* Card 2 */}
-            <RevealOnScroll delayMs={120}>
-            <TiltCard className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all">
+            <RevealOnScroll className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all" delayMs={120}>
               <div className="w-10 h-10 flex items-center justify-center text-white">
                 <svg className="w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.75">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />
@@ -613,12 +499,10 @@ export default function HomePage() {
                   ? 'خطوات حجز ذكية تمنح العملاء مقترحات تعديل وصيانة مخصصة، وتزود شركاءنا ببيانات دقيقة وقابلة للتنفيذ.'
                   : 'Our booking flow uses AI to give customers personalised repair and alteration recommendations, while giving brand partners clear, actionable data on performance and value delivered.'}
               </p>
-            </TiltCard>
             </RevealOnScroll>
 
             {/* Card 3 */}
-            <RevealOnScroll delayMs={240}>
-            <TiltCard className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all">
+            <RevealOnScroll className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all" delayMs={240}>
               <div className="w-10 h-10 flex items-center justify-center text-white">
                 <svg className="w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.75">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
@@ -633,7 +517,6 @@ export default function HomePage() {
                   ? 'بنية تشغيلية مبنية من الصفر — انتقاء أمهر الخيّاطين، تدريب معتمد، والتزام صارم بمواعيد وجودة التسليم.'
                   : "We've built exceptional operations from the ground up — best-in-class talent, training programmes, and the processes to consistently deliver on quality and SLAs."}
               </p>
-            </TiltCard>
             </RevealOnScroll>
           </div>
         </div>
@@ -642,36 +525,22 @@ export default function HomePage() {
       {/* ─────────────────────────────────────────────────────────────
           6. BOTTOM CALL TO ACTION
          ───────────────────────────────────────────────────────────── */}
-      <RevealOnScroll className="max-w-6xl mx-auto px-4">
-        <section className="grain relative overflow-hidden rounded-[2.5rem] bg-[#0B0D12] text-white text-center px-6 py-20 sm:py-28 space-y-8">
-          <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-gold/20 blur-[120px]" />
-          <svg viewBox="0 0 1200 40" preserveAspectRatio="none" className="absolute top-8 inset-x-0 w-full h-6 opacity-60" aria-hidden="true">
-            <path d="M0 20 Q 300 0, 600 20 T 1200 20" className="stitch-path" stroke="rgb(var(--color-gold))" strokeWidth="2" fill="none" />
-          </svg>
-          <svg viewBox="0 0 1200 40" preserveAspectRatio="none" className="absolute bottom-8 inset-x-0 w-full h-6 opacity-60" aria-hidden="true">
-            <path d="M0 20 Q 300 40, 600 20 T 1200 20" className="stitch-path" stroke="rgb(var(--color-gold))" strokeWidth="2" fill="none" />
-          </svg>
-
-          <h2 className="relative text-4xl sm:text-6xl md:text-7xl font-bold leading-tight max-w-3xl mx-auto">
-            {isAr ? (
-              <>قطعتك المفضلة <span className="text-gold-gradient">تستاهل</span> تعيش أطول.</>
-            ) : (
-              <>Your favourite piece <span className="text-gold-gradient">deserves</span> a longer life.</>
-            )}
+      <RevealOnScroll>
+        <section className="max-w-4xl mx-auto px-4 text-center space-y-6 pt-6">
+          <h2 className="text-3xl sm:text-5xl font-sans font-bold text-[#18181B] tracking-tight">
+            {isAr ? 'جاهز لتجربة العناية بملابسك؟' : 'Ready to repair & alter your clothes?'}
           </h2>
-          <p className="relative text-lg text-white/65 max-w-xl mx-auto">
+          <p className="text-lg text-[#71717A] max-w-lg mx-auto">
             {isAr
-              ? 'بدقائق بتبعت طلبك، وبتوصلك عروض من خيّاطين معتمدين بمدينتك.'
-              : 'Send your request in minutes and get quotes from vetted tailors in your city.'}
+              ? 'انضم للآلاف ممن يستمتعون بملابس بمقاس مثالي تدوم لسنوات أطول.'
+              : 'Join thousands of customers wearing clothes that fit right and last longer.'}
           </p>
-          <div className="relative pt-2">
-            <MagneticButton>
-              <Link href="/requests">
-                <span className="btn-shine inline-flex items-center gap-2 px-10 py-5 rounded-full text-lg font-bold text-[#0B0D12] bg-gold hover:bg-[#dcb53a] shadow-[0_10px_50px_rgba(201,162,39,0.5)] transition-colors">
-                  {isAr ? 'ابدأ طلبك الآن' : 'Start your request'} <span aria-hidden="true">{isAr ? '←' : '→'}</span>
-                </span>
-              </Link>
-            </MagneticButton>
+          <div className="pt-2">
+            <Link href="/requests">
+              <span className="btn-shine inline-flex items-center px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#18181B] hover:bg-black shadow-lg transition-transform hover:scale-105">
+                {isAr ? 'احجز خدمة تعديل الآن ➔' : 'Book an alteration now ➔'}
+              </span>
+            </Link>
           </div>
         </section>
       </RevealOnScroll>

@@ -111,7 +111,7 @@ export const PriceGuide: React.FC = () => {
             <li key={row.en} className="flex items-center justify-between gap-4 px-6 py-4 hover:bg-cream/60 transition-colors">
               <span className="text-sm sm:text-base font-medium text-ink">{isAr ? row.ar : row.en}</span>
               <span className="text-sm sm:text-base font-bold text-[#18181B] whitespace-nowrap tabular-nums">
-<bdi dir="ltr">{row.min}–{row.max}</bdi> <span className="text-xs font-medium text-muted">{currency}</span>
+                {row.min}–{row.max} <span className="text-xs font-medium text-muted">{currency}</span>
               </span>
             </li>
           ))}
