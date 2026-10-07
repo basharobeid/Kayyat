@@ -36,10 +36,11 @@ export const Navbar: React.FC = () => {
 
   const links = [
     { href: '/#services', ar: 'الخدمات', en: 'Services' },
-    { href: '/book?service=quick_fix', ar: 'تصليح سريع', en: 'Quick fix' },
+    { href: '/tailors', ar: 'الخيّاطون المعتمدون', en: 'Tailors' },
+    { href: '/fabrics', ar: 'سوق الأقمشة', en: 'Fabrics' },
     { href: '/prices', ar: 'الأسعار', en: 'Prices' },
+    { href: '/account', ar: 'تتبع الطلب', en: 'Track order' },
     { href: '/about', ar: 'عن خيّاط', en: 'About' },
-    ...(user ? [{ href: '/account', ar: 'حجوزاتي', en: 'My bookings' }] : []),
     ...(isStaff ? [{ href: '/staff', ar: 'لوحة الفريق', en: 'Staff' }] : []),
   ];
 

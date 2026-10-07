@@ -36,7 +36,17 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/book" className="hover:text-white transition-colors">
-                  {isAr ? 'احجز خدمة' : 'Book a service'}
+                  {isAr ? 'طلب تعديل ملابس' : 'Fix an item'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/tailors" className="hover:text-white transition-colors">
+                  {isAr ? 'الخيّاطون المعتمدون' : 'Vetted Tailors'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/fabrics" className="hover:text-white transition-colors">
+                  {isAr ? 'سوق الأقمشة' : 'Fabric stores'}
                 </Link>
               </li>
               <li>
@@ -46,7 +56,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link href="/account" className="hover:text-white transition-colors">
-                  {isAr ? 'تتبع حجوزاتي' : 'Track my bookings'}
+                  {isAr ? 'تتبع حالة الطلب' : 'Track Order'}
                 </Link>
               </li>
             </ul>
@@ -55,9 +65,19 @@ export const Footer: React.FC = () => {
           {/* Business links */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-              {isAr ? 'خيّاط' : 'Khayyat'}
+              {isAr ? 'الأعمال والشراكات' : 'Business & Partners'}
             </h4>
             <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/dashboard/tailor" className="hover:text-white transition-colors">
+                  {isAr ? 'انضم كمشغل شريك' : 'Tailor Partner Portal'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/tailor" className="hover:text-white transition-colors">
+                  {isAr ? 'حلول متاجر الأزياء (B2B)' : 'Retail Solutions'}
+                </Link>
+              </li>
               <li>
                 <Link href="/about" className="hover:text-white transition-colors">
                   {isAr ? 'عن خيّاط' : 'About Khayyat'}

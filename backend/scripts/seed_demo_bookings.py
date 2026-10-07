@@ -2,18 +2,23 @@
 
 Usage: python -m scripts.seed_demo_bookings https://khayyat-backend.onrender.com/api/v1
 
+Override the accounts with SEED_CUSTOMER / SEED_STAFF="email|password|name".
+
 Needs staff@khayyat-demo.com listed in the server's ADMIN_EMAILS. Every booking it creates
 belongs to the demo customer account, so it never touches real customers' data.
 """
 
 import json
+import os
 import sys
 import urllib.error
 import urllib.request
 from datetime import date, timedelta
 
-CUSTOMER = ("demo@khayyat-demo.com", "Khayyat-Demo-2026", "سارة الشامي")
-STAFF = ("staff@khayyat-demo.com", "Khayyat-Staff-2026", "فريق خيّاط")
+CUSTOMER = tuple(os.environ.get(
+    "SEED_CUSTOMER", "demo@khayyat-demo.com|Khayyat-Demo-2026|سارة الشامي").split("|"))
+STAFF = tuple(os.environ.get(
+    "SEED_STAFF", "staff@khayyat-demo.com|Khayyat-Staff-2026|فريق خيّاط").split("|"))
 ADDRESS = {"district": "المزة", "address_line": "شارع الجلاء، بناء 12، الطابق 3",
            "contact_phone": "0991234567"}
 
@@ -54,7 +59,7 @@ def main(base):
     cust = account(base, *CUSTOMER)
     staff = account(base, *STAFF)
     if "admin" not in call(base, "/auth/me", token=staff)["roles"]:
-        sys.exit("staff@khayyat-demo.com is not in ADMIN_EMAILS on this server")
+        sys.exit(f"{STAFF[0]} is not in ADMIN_EMAILS on this server")
     if call(base, "/bookings", token=cust):
         print("Demo customer already has bookings; nothing to do.")
         return

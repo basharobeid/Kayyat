@@ -13,7 +13,9 @@ def open_day(offset: int = 1):
     return day.isoformat()
 
 
-ADDRESS = {"district": "المزة", "address_line": "شارع الجلاء، بناء 12", "contact_phone": "0991234567"}
+ADDRESS = {
+    "district": "المزة", "address_line": "شارع الجلاء، بناء 12", "contact_phone": "0991234567",
+}
 
 
 def book(actor, service_type="van_pickup", slot="12:00", day=None, **extra):

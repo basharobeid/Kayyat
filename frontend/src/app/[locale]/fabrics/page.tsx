@@ -281,7 +281,7 @@ export default function FabricsPage() {
               >
                 {orderedSwatch === fabric.id ? (isAr ? '✓ تم طلب العينة' : '✓ Swatch Requested') : (isAr ? 'طلب عينة قماش (Swatch)' : 'Request Swatch')}
               </button>
-              <Link href={`/requests?fabricId=${fabric.id}`} className="flex-1">
+              <Link href="/book" className="flex-1">
                 <Button variant="secondary" size="sm" fullWidth className="rounded-full text-xs font-semibold py-2.5">
                   {isAr ? 'تفصيل مع خيّاط ➔' : 'Tailor this fabric ➔'}
                 </Button>

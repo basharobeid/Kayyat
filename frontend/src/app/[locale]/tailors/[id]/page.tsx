@@ -134,7 +134,7 @@ export default async function TailorProfilePage({
             </div>
           </div>
 
-          <Link href={`/requests?tailorId=${tailor.id}`}>
+          <Link href="/book">
             <Button variant="primary" size="md" className="rounded-full px-7 py-3 bg-white text-black hover:bg-zinc-200 font-semibold shadow-lg">
               {isAr ? 'طلب عرض سعر فوري ➔' : 'Request Quote ➔'}
             </Button>
@@ -248,7 +248,7 @@ export default async function TailorProfilePage({
               </div>
             </div>
 
-            <Link href={`/requests?tailorId=${tailor.id}`} className="block">
+            <Link href="/book" className="block">
               <Button variant="primary" size="md" fullWidth className="rounded-full py-3 bg-white text-black hover:bg-zinc-200 font-bold shadow-md">
                 {isAr ? 'ابدأ حجز التعديل الآن ➔' : 'Start Alteration Booking ➔'}
               </Button>

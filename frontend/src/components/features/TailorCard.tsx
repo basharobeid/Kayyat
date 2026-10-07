@@ -77,7 +77,7 @@ export const TailorCard: React.FC<TailorCardProps> = ({ tailor }) => {
             {t('viewProfile')}
           </Button>
         </Link>
-        <Link href={`/requests?tailorId=${tailor.id}`} className="flex-1">
+        <Link href="/book" className="flex-1">
           <Button variant="primary" size="sm" fullWidth>
             {t('requestQuote')}
           </Button>

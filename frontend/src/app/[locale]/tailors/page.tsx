@@ -328,7 +328,7 @@ export default function TailorsPage() {
 
             {/* Actions */}
             <div className="pt-4 border-t border-line flex gap-3">
-              <Link href={`/requests?tailorId=${tailor.id}`} className="flex-1">
+              <Link href="/book" className="flex-1">
                 <Button variant="primary" size="sm" fullWidth className="rounded-full text-xs font-semibold py-2.5 bg-[#18181B] hover:bg-black text-white">
                   {isAr ? 'طلب عرض سعر فوري ➔' : 'Request Quick Quote ➔'}
                 </Button>

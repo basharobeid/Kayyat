@@ -126,7 +126,7 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        <Link href="/requests">
+        <Link href="/book">
           <Button variant="primary" size="md" className="rounded-full bg-black hover:bg-zinc-800 text-white font-bold text-xs">
             + {isAr ? 'طلب تعديل جديد' : 'New Alteration Order'}
           </Button>

@@ -48,6 +48,7 @@ select = ["E", "F", "I", "B", "UP"]
 [tool.ruff.lint.per-file-ignores]
 # Customer-facing recommendation sentences read better unbroken.
 "app/services/booking_service.py" = ["E501"]
+"scripts/seed_demo_bookings.py" = ["E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app", "scripts", "tests"]
