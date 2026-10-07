@@ -115,7 +115,10 @@ export default function BookingTrackingPage() {
                   })}
                 </div>
               )}
-              <p className="whitespace-pre-wrap text-[#18181B]">{booking.description}</p>
+              {/* A quick fix without notes stores its item keys as the description; the chips already show them. */}
+              {booking.description !== booking.quick_items.join(', ') && (
+                <p className="whitespace-pre-wrap text-[#18181B]">{booking.description}</p>
+              )}
               {booking.address_line && <p className="text-muted">📍 {booking.district}، {booking.address_line}</p>}
               {booking.shop_address && <p className="text-muted">📍 {booking.shop_address}</p>}
               {booking.photo_urls.length > 0 && (
