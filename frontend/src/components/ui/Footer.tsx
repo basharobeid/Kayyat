@@ -35,18 +35,18 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/requests" className="hover:text-white transition-colors">
-                  {isAr ? 'طلب تعديل ملابس' : 'Fix an item'}
+                <Link href="/book" className="hover:text-white transition-colors">
+                  {isAr ? 'احجز خدمة' : 'Book a service'}
                 </Link>
               </li>
               <li>
-                <Link href="/tailors" className="hover:text-white transition-colors">
-                  {isAr ? 'الخيّاطون المعتمدون' : 'Vetted Tailors'}
+                <Link href="/book?service=quick_fix" className="hover:text-white transition-colors">
+                  {isAr ? 'تصليح سريع' : 'Quick fix'}
                 </Link>
               </li>
               <li>
-                <Link href="/orders" className="hover:text-white transition-colors">
-                  {isAr ? 'تتبع حالة الطلب' : 'Track Order'}
+                <Link href="/account" className="hover:text-white transition-colors">
+                  {isAr ? 'تتبع حجوزاتي' : 'Track my bookings'}
                 </Link>
               </li>
             </ul>
@@ -55,17 +55,17 @@ export const Footer: React.FC = () => {
           {/* Business links */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-              {isAr ? 'الأعمال والشراكات' : 'Business & Partners'}
+              {isAr ? 'خيّاط' : 'Khayyat'}
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/dashboard/tailor" className="hover:text-white transition-colors">
-                  {isAr ? 'انضم كمشغل شريك' : 'Tailor Partner Portal'}
+                <Link href="/about" className="hover:text-white transition-colors">
+                  {isAr ? 'عن خيّاط' : 'About Khayyat'}
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/tailor" className="hover:text-white transition-colors">
-                  {isAr ? 'حلول متاجر الأزياء (B2B)' : 'Retail Solutions'}
+                <Link href="/prices" className="hover:text-white transition-colors">
+                  {isAr ? 'الأسعار' : 'Prices'}
                 </Link>
               </li>
             </ul>

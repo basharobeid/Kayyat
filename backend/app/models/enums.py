@@ -74,6 +74,18 @@ class QuoteStatus(StrEnum):
     WITHDRAWN = "withdrawn"
 
 
+class BookingServiceType(StrEnum):
+    SHOP_VISIT = "shop_visit"
+    VAN_PICKUP = "van_pickup"
+    HOME_SERVICE = "home_service"
+    QUICK_FIX = "quick_fix"
+
+
+class PaymentStatus(StrEnum):
+    UNPAID = "unpaid"
+    PAID = "paid"
+
+
 class DisputeStatus(StrEnum):
     OPEN = "open"
     UNDER_REVIEW = "under_review"

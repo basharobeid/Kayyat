@@ -5,7 +5,7 @@ import pytest
 REQUEST = {
     "title": "تقصير بنطلون",
     "description": "أبغى أقصر البنطلون ٣ سم مع الحفاظ على الحافة الأصلية",
-    "city": "riyadh",
+    "city": "damascus",
     "needs_delivery": True,
 }
 QUOTE = {"price": 40, "duration_days": 2, "offers_delivery": True, "message": "جاهز"}
@@ -15,7 +15,7 @@ QUOTE = {"price": 40, "duration_days": 2, "offers_delivery": True, "message": "�
 def setup(make_actor, catalog):
     customer = make_actor("customer", "سارة العتيبي")
     tailor = make_actor("tailor", "أبو أحمد")
-    tailor.patch("/api/v1/tailors/me/profile", {"city": "riyadh", "offers_delivery": True})
+    tailor.patch("/api/v1/tailors/me/profile", {"city": "damascus", "offers_delivery": True})
     rival = make_actor("tailor", "خالد")
     request = customer.post("/api/v1/requests", {**REQUEST, "service_id": catalog["hem"]})
     assert request.status_code == 201, request.text

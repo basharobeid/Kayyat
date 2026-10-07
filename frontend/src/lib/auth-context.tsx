@@ -12,6 +12,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<AuthUser>;
   register: (payload: RegisterPayload) => Promise<AuthUser>;
+  googleLogin: (idToken: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -75,6 +76,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return me;
   }, []);
 
+  const googleLogin = useCallback(async (idToken: string) => {
+    const tokens = await authApi.google(idToken);
+    storeTokens(tokens);
+    const me = await authApi.me();
+    setUser(me);
+    return me;
+  }, []);
+
   const logout = useCallback(async () => {
     const refreshToken = localStorage.getItem(REFRESH_KEY);
     clearTokens();
@@ -89,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, googleLogin, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

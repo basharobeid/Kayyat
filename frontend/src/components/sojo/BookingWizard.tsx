@@ -38,7 +38,7 @@ export const BookingWizard: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [city, setCity] = useState<CitySlug>('riyadh');
+  const [city, setCity] = useState<CitySlug>('damascus');
   const [fulfillment, setFulfillment] = useState<'delivery' | 'dropoff' | 'van_visit'>('delivery');
   const [preferredDate, setPreferredDate] = useState('');
   const [budget, setBudget] = useState('');

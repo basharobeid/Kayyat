@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -8,12 +9,18 @@ import { Input } from '@/components/ui/Input';
 import { Link, useRouter } from '@/i18n/routing';
 import { useAuth } from '@/lib/auth-context';
 import { APIError } from '@/lib/api-client';
+import { GoogleButton } from '@/components/booking/GoogleButton';
 
-export default function LoginPage() {
+function LoginForm() {
   const locale = useLocale();
   const isAr = locale === 'ar';
   const router = useRouter();
   const { login } = useAuth();
+  const next = useSearchParams().get('next');
+  // Only follow same-site paths, never an absolute URL (open-redirect).
+  const safeNext = next && /^\/(?![/\\])/.test(next) ? next : null;
+  const afterLogin = (roles: string[]) =>
+    router.push(safeNext ?? (roles.includes('admin') ? '/staff' : roles.includes('tailor') ? '/dashboard/tailor' : '/account'));
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +34,7 @@ export default function LoginPage() {
 
     try {
       const user = await login({ identifier: email, password });
-      router.push(user.roles.includes('tailor') ? '/dashboard/tailor' : '/requests');
+      afterLogin(user.roles);
     } catch (err) {
       if (err instanceof APIError) {
         setErrorMsg(
@@ -69,6 +76,10 @@ export default function LoginPage() {
 
         {/* Login Card */}
         <Card className="p-8 rounded-3xl border border-line/80 shadow-lg space-y-6">
+          <GoogleButton onSuccess={() => router.push(safeNext ?? '/account')} />
+          <div className="flex items-center gap-3 text-xs text-muted">
+            <span className="h-px flex-1 bg-line" />{isAr ? 'أو بالإيميل' : 'or with email'}<span className="h-px flex-1 bg-line" />
+          </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <Input
               type="email"
@@ -165,5 +176,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[85vh]" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

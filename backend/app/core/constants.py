@@ -3,17 +3,22 @@
 Slugs are stored in the database; display names live in translations only.
 """
 
+# Syrian governorates. Bookings are only accepted in settings.service_cities.
 CITIES = (
-    "riyadh",
-    "jeddah",
-    "makkah",
-    "madinah",
-    "dammam",
-    "khobar",
-    "taif",
-    "abha",
-    "tabuk",
-    "qassim",
+    "damascus",
+    "rif_dimashq",
+    "aleppo",
+    "homs",
+    "hama",
+    "latakia",
+    "tartus",
+    "daraa",
+    "as_suwayda",
+    "quneitra",
+    "idlib",
+    "deir_ez_zor",
+    "raqqa",
+    "hasakah",
 )
 
 SPECIALTIES = (

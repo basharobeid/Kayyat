@@ -2,549 +2,225 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { Link } from '@/i18n/routing';
+import { Link, useRouter } from '@/i18n/routing';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
-import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
-import { catalogApi } from '@/lib/api';
-import { PriceGuide } from '@/components/features/PriceGuide';
+import { bookingsApi, formatPrice, type BookingOptions } from '@/lib/api';
+import { QUICK_ITEMS, SCENES, SERVICES, statusLabel } from '@/components/booking/catalog';
 
-// Sensible fallbacks if the live catalog can't be reached (e.g. the free backend is
-// cold-starting) so the marketing page never shows a broken/empty stats row.
-const FALLBACK_STATS = { services: 18, cities: 10, categories: 3 };
+const JOURNEY = [
+  { ar: 'اختار أو اوصف', en: 'Choose or describe' },
+  { ar: 'منقترح الخدمة', en: 'We recommend' },
+  { ar: 'المكان والوقت', en: 'Place & time' },
+  { ar: 'تأكيد', en: 'Confirm' },
+  { ar: 'تتبع مباشر', en: 'Live tracking' },
+  { ar: 'تنفيذ', en: 'Service done' },
+  { ar: 'دفع كاش', en: 'Pay in cash' },
+  { ar: 'تقييم', en: 'Review' },
+];
+
+const SAMPLE_PIPELINE = ['submitted', 'confirmed', 'van_assigned', 'pickup_in_progress', 'item_received', 'in_progress', 'quality_check', 'ready', 'completed'];
+const SAMPLE_CURRENT = 5;
 
 export default function HomePage() {
-  const locale = useLocale();
-  const isAr = locale === 'ar';
-  const [stats, setStats] = useState(FALLBACK_STATS);
+  const isAr = useLocale() === 'ar';
+  const router = useRouter();
+  const [ask, setAsk] = useState('');
+  const [options, setOptions] = useState<BookingOptions | null>(null);
 
   useEffect(() => {
-    Promise.all([catalogApi.services(), catalogApi.meta()])
-      .then(([categories, meta]) => {
-        setStats({
-          services: categories.reduce((sum, c) => sum + c.services.length, 0),
-          cities: meta.cities.length,
-          categories: categories.length,
-        });
-      })
-      .catch(() => {
-        // Keep the fallback numbers; this is a marketing page, not a data page.
-      });
+    bookingsApi.options().then(setOptions).catch(() => {});
   }, []);
+
+  const price = (usd: number) => (options ? formatPrice(usd, options.usd_to_syp, isAr) : `$${usd}`);
 
   return (
     <div className="space-y-24 pb-20">
-      
-      {/* ─────────────────────────────────────────────────────────────
-          1. HERO SECTION (Directly matching Screenshot 5)
-         ───────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[92vh] flex items-center justify-center text-center overflow-hidden px-4">
-        {/* Editorial Fashion Photography Background with a slow continuous Ken Burns drift */}
-        <div
-          className="absolute inset-0 bg-cover bg-center -z-10 animate-ken-burns"
-          style={{
-            backgroundImage: `url('/G4cfAEDulUqxGAMCOM4atCL63M.jpeg')`,
-          }}
-        />
-        {/* Soft luxury editorial overlay to guarantee crisp text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-black/60 -z-10" />
+      {/* HERO */}
+      <section className="relative min-h-[88vh] flex items-center justify-center overflow-hidden px-4">
+        <div className="absolute inset-0 bg-cover bg-center -z-10 animate-ken-burns" style={{ backgroundImage: `url('${SCENES.hero}')` }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-black/70 -z-10" />
 
-        <div className="max-w-4xl mx-auto pt-24 pb-16 space-y-7 text-white">
-
-          {/* Floating Pill Announcement Tag */}
-          <div className="reveal is-visible inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/25 shadow-sm text-[0.8125rem] font-medium transition-all cursor-pointer animate-float">
-            <span>
-              {isAr
-                ? 'خيّاط × أرقى خدمات العناية بالملابس ✦ اكتشف المزيد'
-                : 'KHAYYAT is here. Learn more →'}
-            </span>
-          </div>
-
-          {/* Big Editorial Headline */}
-          <h1 className="reveal is-visible text-4xl sm:text-6xl md:text-7xl font-sans font-bold tracking-tight leading-[1.08] max-w-3xl mx-auto drop-shadow-sm" style={{ animationDelay: '120ms' }}>
+        <div className="max-w-3xl mx-auto pt-28 pb-16 space-y-7 text-center text-white">
+          <span className="reveal is-visible inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md border border-white/25 px-4 py-1 text-[0.8125rem] font-medium">
+            {isAr ? 'دمشق · خدمة خياطة عند الطلب' : 'Damascus · on-demand tailoring'}
+          </span>
+          <h1 className="reveal is-visible text-4xl sm:text-6xl font-bold tracking-tight leading-[1.1]" style={{ animationDelay: '100ms' }}>
             {isAr ? (
-              <>
-                الملابس <span className="text-gold-gradient">صُنعت لتدوم</span>. <br />
-                <span className="font-normal opacity-95">ونحن هنا لنضمن ذلك.</span>
-              </>
+              <>الخياطة والتعديل،<br /><span className="text-gold-gradient">بسهولة طلب أي خدمة.</span></>
             ) : (
-              <>
-                Clothes are <span className="text-gold-gradient">made to last</span>. <br />
-                <span className="font-normal opacity-95">We make sure they do.</span>
-              </>
+              <>Tailoring and alterations,<br /><span className="text-gold-gradient">as easy as any on-demand service.</span></>
             )}
           </h1>
+          <p className="reveal is-visible text-base sm:text-lg text-white/80 max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
+            {isAr
+              ? 'احجز موعد بالمحل، أو خلّي الفان يجي ياخد القياس، أو الخيّاط يشتغل عندك بالبيت. وتابع كل خطوة لحظة بلحظة.'
+              : 'Book a shop appointment, have our van come to measure you, or get the tailor to work at your home, then follow every step live.'}
+          </p>
 
-          {/* Dual Pill CTA Buttons (Exact match to Sojo Screenshot 5) */}
-          <div className="reveal is-visible flex flex-col sm:flex-row items-center justify-center gap-3 pt-4" style={{ animationDelay: '240ms' }}>
-            {/* Fix an item Pill (Frosted Light) */}
-            <Link href="/requests">
-              <span className="btn-shine inline-flex items-center justify-center px-7 py-3 rounded-full text-[0.9375rem] font-semibold text-[#18181B] bg-white/90 hover:bg-white backdrop-blur-md shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
-                {isAr ? 'عدّل قطعة الآن' : 'Fix an item'}
-              </span>
-            </Link>
+          <form
+            className="reveal is-visible mx-auto flex max-w-xl flex-col gap-2 rounded-3xl bg-white p-2 shadow-2xl sm:flex-row"
+            style={{ animationDelay: '300ms' }}
+            onSubmit={(e) => { e.preventDefault(); router.push(`/book?describe=${encodeURIComponent(ask)}`); }}
+          >
+            <input
+              id="hero-ask"
+              value={ask}
+              onChange={(e) => setAsk(e.target.value)}
+              placeholder={isAr ? 'شو بدك تعمل بقطعتك؟ مثلاً: تقصير بنطلون' : 'What does your piece need? e.g. shorten trousers'}
+              className="h-12 flex-1 rounded-2xl px-4 text-sm text-[#18181B] placeholder:text-muted focus:outline-none"
+            />
+            <button type="submit" className="btn-shine h-12 rounded-2xl bg-[#18181B] px-6 text-sm font-bold text-white whitespace-nowrap">
+              {isAr ? 'اقترحلي الخدمة' : 'Suggest a service'}
+            </button>
+          </form>
 
-            {/* Partner with us Pill (Solid Charcoal/Black) */}
-            <Link href="/dashboard/tailor">
-              <span className="btn-shine inline-flex items-center justify-center px-7 py-3 rounded-full text-[0.9375rem] font-semibold text-white bg-[#18181B]/95 hover:bg-black backdrop-blur-md shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
-                {isAr ? 'انضم كشريك' : 'Partner with us'}
-              </span>
-            </Link>
+          <div className="reveal is-visible flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-white/75" style={{ animationDelay: '400ms' }}>
+            <span>✓ {isAr ? 'الدفع كاش بعد الخدمة' : 'Pay in cash after the service'}</span>
+            <span>✓ {isAr ? 'تتبع مباشر للطلب' : 'Live order tracking'}</span>
+            <span>✓ {isAr ? 'محادثة مع الخيّاط' : 'Chat with the tailor'}</span>
           </div>
-        </div>
-
-        {/* Scroll cue */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 animate-chevron">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          BY THE NUMBERS
-         ───────────────────────────────────────────────────────────── */}
-      <RevealOnScroll>
-        <section className="max-w-5xl mx-auto px-4 -mt-12 relative z-10">
-          <div className="bg-white rounded-3xl shadow-xl border border-line/60 grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-line/60 rtl:divide-x-reverse overflow-hidden">
-            {[
-              { value: stats.services, suffix: '+', labelAr: 'خدمة تعديل وإصلاح', labelEn: 'Alteration & repair services' },
-              { value: stats.cities, suffix: '', labelAr: 'مدينة مغطاة', labelEn: 'Cities covered' },
-              { value: stats.categories, suffix: '', labelAr: 'فئات خدمة رئيسية', labelEn: 'Core service categories' },
-              { value: 100, suffix: '%', labelAr: 'ضمان المقاس', labelEn: 'Fit guarantee' },
-            ].map((s, idx) => (
-              <div key={idx} className="p-6 sm:p-8 text-center">
-                <p className="text-3xl sm:text-4xl font-bold text-[#18181B] tracking-tight">
-                  <AnimatedCounter value={s.value} suffix={s.suffix} />
-                </p>
-                <p className="text-xs sm:text-sm text-muted mt-1.5 font-medium">
-                  {isAr ? s.labelAr : s.labelEn}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </RevealOnScroll>
-
-      {/* ─────────────────────────────────────────────────────────────
-          2. PRESS LOGOS MARQUEE (Matching Screenshot 5)
-         ───────────────────────────────────────────────────────────── */}
-      <RevealOnScroll>
-        <section className="py-10 border-b border-black/[0.06] bg-white">
-          <div className="marquee max-w-6xl mx-auto">
-            <div className="marquee-track items-center opacity-80 text-[#18181B] font-serif font-bold text-xl md:text-2xl tracking-[0.2em] uppercase">
-              {[0, 1].map((copy) => (
-                <div key={copy} className="flex items-center gap-16 md:gap-24 pe-16 md:pe-24" aria-hidden={copy === 1}>
-                  <span className="tracking-tight font-sans font-black bg-black text-white px-2 py-0.5 rounded-sm text-lg">BBC</span>
-                  <span className="font-serif italic font-bold">VOGUE</span>
-                  <span className="font-serif tracking-widest">THE TIMES</span>
-                  <span className="font-serif italic tracking-wider">BAZAAR</span>
-                  <span className="font-serif lowercase font-bold tracking-tight">The Guardian</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </RevealOnScroll>
-
-      {/* ─────────────────────────────────────────────────────────────
-          3. "WHAT WE DO" SECTION (Matching Screenshots 1 & 2)
-         ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 space-y-24">
-        
-        {/* Section Header */}
-        <RevealOnScroll className="text-center space-y-4 max-w-2xl mx-auto">
+      {/* SERVICES */}
+      <section id="services" className="max-w-6xl mx-auto px-4 space-y-10 scroll-mt-28">
+        <RevealOnScroll className="text-center space-y-3 max-w-2xl mx-auto">
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
-            {isAr ? 'ماذا نقدم' : 'What we do'}
+            {isAr ? 'خدماتنا' : 'Services'}
           </span>
-          <h2 className="text-3xl sm:text-5xl font-sans font-bold text-[#18181B] tracking-tight">
-            {isAr
-              ? 'منصة التعديل والصيانة الاحترافية المعتمدة'
-              : "We're the expert alterations and repair platform"}
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">
+            {isAr ? 'أربع طرق، اختار الأنسب إلك' : 'Four ways, pick what suits you'}
           </h2>
-          <p className="text-lg text-[#71717A] max-w-xl mx-auto leading-relaxed">
-            {isAr
-              ? 'حلول عناية فائقة بالملابس تحظى بثقة الأفراد وأكبر علامات الأزياء'
-              : 'Expert clothing care solutions loved by both brands and customers'}
+          <p className="text-[#71717A]">
+            {isAr ? 'ما بتعرف شو بيناسبك؟ احكيلنا شو بدك ونحن منقترح.' : 'Not sure which fits? Tell us what you need and we’ll suggest one.'}
           </p>
         </RevealOnScroll>
 
-        {/* Split 1: SOJO for customers (Screenshot 1) */}
-        <RevealOnScroll className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="space-y-6">
-            <h3 className="text-3xl sm:text-4xl font-sans font-bold text-[#18181B] tracking-tight">
-              {isAr ? 'خيّاط للأفراد' : 'SOJO for customers'}
-            </h3>
-            <p className="text-base sm:text-lg text-[#52525B] leading-relaxed">
-              {isAr
-                ? 'احجز خدمة تعديل أو صيانة ملابسك أونلاين بكل سهولة. استعد قطعك المفضلة بمقاس وتفصيل مثالي، مع خدمة التوصيل المباشر لبابك.'
-                : 'Book expert clothing repairs and alteration services online. Get your favourite items back in perfect condition, delivered directly to your door.'}
-            </p>
-
-            <ul className="space-y-3.5 pt-2">
-              {[
-                isAr ? 'حجز إلكتروني مبسط في 5 دقائق' : 'Simple online booking in 5 minutes',
-                isAr ? 'دليل إرشادي لتثبيت الدبابيس وتحديد الطول من المنزل' : 'At-home pinning & repair finish guidance',
-                isAr ? 'تنفيذ فائق الدقة بأيدي خيّاطين محترفين معتمدين' : "Everything completed by Khayyat's expert vetted tailors",
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-center gap-3 text-[0.9375rem] text-[#18181B] font-medium">
-                  <span className="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center text-xs flex-shrink-0">
-                    ✓
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="pt-4">
-              <Link href="/requests">
-                <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#18181B] hover:bg-black text-white text-[0.875rem] font-semibold transition-all shadow-sm">
-                  {isAr ? 'كيف يعمل خيّاط ↗' : 'How it works ↗'}
-                </span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Photo: Artisan hands sewing at machine (Matching Screenshot 1) */}
-          <div className="overflow-hidden rounded-3xl shadow-xl aspect-[4/3] bg-zinc-100 relative group">
-            <img
-              src="/AEfoZzbxbn68WvwFvvXQInhOs.jpeg"
-              alt="Artisan hands operating a sewing machine"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-            />
-          </div>
-        </RevealOnScroll>
-
-        {/* Split 2: SOJO for brands (Screenshot 2) */}
-        <RevealOnScroll className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center pt-8">
-          {/* Photo: Delivery Cargo / Specialized Care (Matching Screenshot 2) */}
-          <div className="order-2 lg:order-1 overflow-hidden rounded-3xl shadow-xl aspect-[4/3] bg-zinc-100 relative group">
-            <img
-              src="/AGI6JHG4ojGjbREnbz8H9K897g.png"
-              alt="Dedicated logistics delivery for garments"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-            />
-          </div>
-
-          {/* Brand Details */}
-          <div className="order-1 lg:order-2 space-y-6">
-            <h3 className="text-3xl sm:text-4xl font-sans font-bold text-[#18181B] tracking-tight">
-              {isAr ? 'خيّاط للمتاجر والعلامات' : 'SOJO for brands'}
-            </h3>
-            <p className="text-base sm:text-lg text-[#52525B] leading-relaxed">
-              {isAr
-                ? 'نتعاون مع كبرى علامات الأزياء وبوتيكات التجزئة لتوفير خدمات تعديل وصيانة ما بعد البيع تقلل الهدر وتزيد ولاء العملاء.'
-                : 'We partner with leading fashion brands to deliver scalable tailoring and repair aftercare solutions that reduce waste and increase customer loyalty.'}
-            </p>
-
-            <ul className="space-y-3.5 pt-2">
-              {[
-                isAr ? 'زيادة المبيعات داخل المتاجر عبر حلول التعديل الفورية' : 'Drive in-store sales with our retail solution',
-                isAr ? 'استعادة قيمة المخزون التالف وإعادة تأهيله للبيع' : 'Unlock revenue through damaged stock recovery',
-                isAr ? 'إطلاق خدمة صيانة شاملة تعزز معايير الاستدامة لعلامتك' : 'Launch a nationwide customer repair service to boost sustainability credentials',
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-center gap-3 text-[0.9375rem] text-[#18181B] font-medium">
-                  <span className="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center text-xs flex-shrink-0">
-                    ✓
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="pt-4">
-              <Link href="/dashboard/tailor">
-                <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#18181B] hover:bg-black text-white text-[0.875rem] font-semibold transition-all shadow-sm">
-                  {isAr ? 'حلول الأعمال ↗' : 'Our solutions ↗'}
-                </span>
-              </Link>
-            </div>
-          </div>
-        </RevealOnScroll>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────
-          TWO WAYS TO GET IT DONE
-         ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 space-y-12">
-        <RevealOnScroll className="text-center space-y-4 max-w-2xl mx-auto">
-          <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
-            {isAr ? 'كيف بدك الخدمة؟' : 'Your way'}
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">
-            {isAr ? 'طريقتين، والخيار إلك' : 'Two ways to get it done'}
-          </h2>
-        </RevealOnScroll>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <RevealOnScroll className="group rounded-3xl overflow-hidden bg-[#14171F] text-white shadow-xl flex flex-col">
-            <div className="bg-cream overflow-hidden">
-              <img
-                src="/mobile-tailor-van.svg"
-                alt={isAr ? 'الخيّاط المتنقل' : 'Mobile tailor van'}
-                className="w-full h-auto group-hover:scale-[1.03] transition-transform duration-700"
-              />
-            </div>
-            <div className="p-8 space-y-3 flex-1 flex flex-col">
-              <span className="text-xs font-bold text-gold uppercase tracking-widest">
-                {isAr ? 'جديد · زيارة منزلية' : 'New · Home visit'}
-              </span>
-              <h3 className="text-2xl font-bold tracking-tight">
-                {isAr ? 'الخيّاط بيجي لعندك' : 'The tailor comes to you'}
-              </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed flex-1">
-                {isAr
-                  ? 'فان مجهّز بيوصل لتحت بيتك، الخيّاط بياخد قياسك على الطبيعة، وبيفصّل القطعة فوراً أو بياخدها ع المشغل وبيرجعها.'
-                  : 'An equipped van pulls up outside, the tailor measures you in person, then alters on the spot or takes it to the workshop and brings it back.'}
-              </p>
-              <Link href="/requests" className="pt-2">
-                <span className="btn-shine inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-[#18181B] bg-gold hover:bg-gold/90">
-                  {isAr ? 'اطلب زيارة ➔' : 'Book a visit ➔'}
-                </span>
-              </Link>
-            </div>
-          </RevealOnScroll>
-
-          <RevealOnScroll className="group rounded-3xl overflow-hidden bg-white border border-line/80 shadow-xl flex flex-col" delayMs={120}>
-            <div className="overflow-hidden aspect-[5/3]">
-              <img
-                src="/AGI6JHG4ojGjbREnbz8H9K897g.png"
-                alt={isAr ? 'استلام وتوصيل' : 'Pickup and delivery'}
-                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
-              />
-            </div>
-            <div className="p-8 space-y-3 flex-1 flex flex-col">
-              <span className="text-xs font-bold text-gold-ink uppercase tracking-widest">
-                {isAr ? 'استلام وتوصيل · أو بالمشغل' : 'Pickup & delivery · or drop-off'}
-              </span>
-              <h3 className="text-2xl font-bold tracking-tight text-[#18181B]">
-                {isAr ? 'دبّسها وخلّي الباقي علينا' : 'Pin it, we handle the rest'}
-              </h3>
-              <p className="text-sm text-[#71717A] leading-relaxed flex-1">
-                {isAr
-                  ? 'ثبّت الطول بالدبابيس وصوّر القطعة، مندوب بيستلمها منك وبيرجعها جاهزة ومكوية — أو سلّمها بنفسك للمشغل.'
-                  : 'Pin the fit and snap a photo; a courier collects it and returns it pressed and ready — or drop it at the workshop yourself.'}
-              </p>
-              <Link href="/requests" className="pt-2">
-                <span className="btn-shine inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-white bg-[#18181B] hover:bg-black">
-                  {isAr ? 'ابدأ الحجز ➔' : 'Start booking ➔'}
-                </span>
-              </Link>
-            </div>
-          </RevealOnScroll>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {SERVICES.map((s, i) => {
+            const fee = options?.visit_fees_usd[s.type];
+            return (
+              <RevealOnScroll key={s.type} delayMs={i * 80}>
+                <Link href={`/book?service=${s.type}`} className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line/80 bg-white shadow-sm transition-shadow hover:shadow-xl">
+                  <div className="aspect-[16/9] overflow-hidden bg-cream">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.image} alt={isAr ? s.ar.name : s.en.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-3 p-6">
+                    <h3 className="text-xl font-bold text-[#18181B]">{s.icon} {isAr ? s.ar.name : s.en.name}</h3>
+                    <p className="text-sm text-[#52525B] leading-relaxed flex-1">{isAr ? s.ar.long : s.en.long}</p>
+                    <p className="text-xs font-medium text-muted">{isAr ? s.ar.steps : s.en.steps}</p>
+                    <div className="flex items-center justify-between pt-2 border-t border-line">
+                      <span className="text-xs text-muted">
+                        {fee === undefined ? '' : fee > 0 ? `${isAr ? 'رسم الزيارة' : 'Visit fee'} ${price(fee)}` : (isAr ? 'بدون رسم زيارة' : 'No visit fee')}
+                      </span>
+                      <span className="rounded-full bg-[#18181B] px-4 py-2 text-xs font-bold text-white">{isAr ? 'احجز ←' : 'Book →'}</span>
+                    </div>
+                  </div>
+                </Link>
+              </RevealOnScroll>
+            );
+          })}
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          PRICE GUIDE
-         ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-4 space-y-10">
-        <RevealOnScroll className="text-center space-y-4 max-w-2xl mx-auto">
-          <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
-            {isAr ? 'دليل الأسعار' : 'Price guide'}
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">
-            {isAr ? 'أسعار واضحة، بدون مفاجآت' : 'Clear prices, no surprises'}
-          </h2>
+      {/* JOURNEY */}
+      <section className="max-w-6xl mx-auto px-4 space-y-10">
+        <RevealOnScroll className="text-center space-y-3">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">{isAr ? 'من الطلب للتسليم' : 'From request to delivery'}</h2>
+          <p className="text-[#71717A]">{isAr ? 'نفس الرحلة لكل الخدمات، بدقيقتين بتحجز.' : 'One journey for every service; booking takes about two minutes.'}</p>
         </RevealOnScroll>
         <RevealOnScroll>
-          <PriceGuide />
+          <ol className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+            {JOURNEY.map((j, i) => (
+              <li key={j.en} className="rounded-2xl border border-line bg-white p-4 text-center">
+                <span className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#18181B] text-xs font-bold text-white">{i + 1}</span>
+                <p className="text-sm font-semibold text-[#18181B]">{isAr ? j.ar : j.en}</p>
+              </li>
+            ))}
+          </ol>
         </RevealOnScroll>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          4. "OUR WORK WITH BRANDS" 3-CARD SHOWCASE (Matching Screenshot 3)
-         ───────────────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 space-y-12">
-        <RevealOnScroll className="text-center space-y-4 max-w-2xl mx-auto">
-          <span className="inline-block px-3.5 py-1 rounded-full bg-[#F4F4F5] text-[0.8125rem] font-medium text-[#18181B] border border-[#E4E4E7]">
-            {isAr ? 'حلولنا' : 'Our solutions'}
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-sans font-bold text-[#18181B] tracking-tight">
-            {isAr ? 'منظومة عملنا مع العلامات التجارية' : 'Our work with brands'}
-          </h2>
-          <p className="text-lg text-[#71717A] max-w-xl mx-auto leading-relaxed">
-            {isAr
-              ? 'حلول تعديل وصيانة متكاملة تدعم أهداف النمو والاستدامة لقطاع الأزياء'
-              : 'End-to-end repair and alteration solutions to support goals across your business'}
-          </p>
-        </RevealOnScroll>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Card 1: Customer repair service */}
-          <RevealOnScroll className="space-y-4 group cursor-pointer">
-            <div className="overflow-hidden rounded-3xl aspect-[4/3] bg-zinc-100 shadow-md">
-              <img
-                src="/4ELzdJRzQ5VXQAPbmICpr3joms.png"
-                alt="Hand stitching clothing repair"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <h4 className="text-xl font-bold text-[#18181B] tracking-tight">
-              {isAr ? 'خدمة صيانة وإصلاح الأفراد' : 'Customer repair service'}
-            </h4>
-            <p className="text-sm text-[#71717A] leading-relaxed">
-              {isAr
-                ? 'خدمة صيانة وإصلاح متكاملة لعملاء متاجرك — حجز رقمي مباشر وتسليم خلال سبعة أيام بمستوى عالٍ من التخصيص.'
-                : 'A fully managed repair service for your customers — booked online and returned in seven days. Fully customised to your brand.'}
-            </p>
-          </RevealOnScroll>
-
-          {/* Card 2: Digitised retail alterations */}
-          <RevealOnScroll className="space-y-4 group cursor-pointer" delayMs={120}>
-            <div className="overflow-hidden rounded-3xl aspect-[4/3] bg-zinc-100 shadow-md">
-              <img
-                src="/KHAYAT.png"
-                alt="Tailor fitting a bespoke suit jacket"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <h4 className="text-xl font-bold text-[#18181B] tracking-tight">
-              {isAr ? 'رقمنة تعديلات متاجر التجزئة' : 'Digitised retail alterations'}
-            </h4>
-            <p className="text-sm text-[#71717A] leading-relaxed">
-              {isAr
-                ? 'متاجرك وخيّاطوك مع منصتنا الذكية. نحول التعديلات اليدوية والفواتير الورقية إلى تجربة رقمية متكاملة تتضمن الحجز والتتبع والإشعارات.'
-                : 'Your stores, your tailors, our tech. Khayyat digitises your in-store alterations process — replacing paper dockets with automated booking, comms and invoicing across every location.'}
-            </p>
-          </RevealOnScroll>
-
-          {/* Card 3: Damaged stock recovery */}
-          <RevealOnScroll className="space-y-4 group cursor-pointer" delayMs={240}>
-            <div className="overflow-hidden rounded-3xl aspect-[4/3] bg-zinc-100 shadow-md">
-              <img
-                src="/AEfoZzbxbn68WvwFvvXQInhOs.jpeg"
-                alt="Hands inspecting fabric for recovery"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <h4 className="text-xl font-bold text-[#18181B] tracking-tight">
-              {isAr ? 'استعادة وتأهيل المخزون التالف' : 'Damaged stock recovery'}
-            </h4>
-            <p className="text-sm text-[#71717A] leading-relaxed">
-              {isAr
-                ? 'تحويل الملابس التالفة والمرتجعات غير القابلة للبيع إلى عوائد مستردة عبر ترميمها وإعادتها لحالتها الأصلية للبيع.'
-                : 'Turn damaged and unsellable inventory into recovered revenue. Khayyat repairs and restores marked-out stock — from shop floor returns to warehouse overstocks.'}
-            </p>
-          </RevealOnScroll>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────
-          5. DARK MODE "KEY FEATURES" (Directly matching Screenshot 4)
-         ───────────────────────────────────────────────────────────── */}
+      {/* TRACKING SHOWCASE */}
       <section className="max-w-6xl mx-auto px-4">
-        {/* Brand Partner Logos Above the Dark Card */}
-        <div className="py-6 flex flex-wrap items-center justify-around gap-8 opacity-70 grayscale text-[#18181B] font-serif font-bold text-lg md:text-xl tracking-widest uppercase">
-          <span>PAUL SMITH</span>
-          <span>RALPH LAUREN</span>
-          <span>GANNI</span>
-          <span>M&S</span>
-          <span>HARVEY NICHOLS</span>
-        </div>
-
-        {/* Dark Container */}
-        <div className="rounded-[2.5rem] bg-[#14171F] text-white p-8 sm:p-14 md:p-20 space-y-16 shadow-2xl border border-white/[0.08] relative overflow-hidden">
-          {/* Ambient glow accents */}
-          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-gold/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-info/10 blur-3xl" />
-
-          <RevealOnScroll className="text-center space-y-4 max-w-2xl mx-auto relative">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-white/10 text-[0.8125rem] font-medium text-white/90 border border-white/15">
-              {isAr ? 'أبرز المزايا' : 'Key Features'}
+        <div className="grid items-center gap-10 rounded-[2.5rem] bg-[#14171F] p-8 text-white sm:p-14 lg:grid-cols-2">
+          <RevealOnScroll className="space-y-5">
+            <span className="inline-block rounded-full bg-white/10 px-3.5 py-1 text-[0.8125rem] font-medium text-white/90 border border-white/15">
+              {isAr ? 'تتبع مباشر' : 'Live tracking'}
             </span>
-            <h2 className="text-3xl sm:text-5xl font-sans font-bold tracking-tight text-white">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">{isAr ? 'بتعرف وين قطعتك بكل لحظة' : 'Know where your piece is, at every moment'}</h2>
+            <p className="text-zinc-400 leading-relaxed">
               {isAr
-                ? 'لماذا تختار كبرى دور الأزياء منصة خيّاط'
-                : 'Why the biggest names in fashion choose KHAYYAT'}
-            </h2>
-            <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
-              {isAr
-                ? 'أحدث التقنيات الرقمية، خبرات تشغيلية لوجستية، وحرفية خياطة متفوقة — مدمجة في حل متكامل للعناية بالملابس.'
-                : 'Best-in-class technology, operations and tailoring expertise — built into a cohesive clothing care solution for fashion brands.'}
+                ? 'لما الفان يطلع لعندك، لما نستلم القطعة، لما يبلّش الشغل ولما تخلص. بيوصلك إشعار، وفيك تحكي مع الفريق وتبعت صور بأي وقت.'
+                : 'When the van heads out, when we receive your piece, when work starts and when it’s done, you get a notification, and you can message the team and send photos at any time.'}
             </p>
+            <Link href="/book" className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-bold text-black">{isAr ? 'جرّب الحجز' : 'Try booking'}</Link>
           </RevealOnScroll>
-
-          {/* 3 Dark Feature Cards with Line Icons (Matching Screenshot 4) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-
-            {/* Card 1 */}
-            <RevealOnScroll className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all">
-              <div className="w-10 h-10 flex items-center justify-center text-white">
-                <svg className="w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.75">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-                </svg>
+          <RevealOnScroll delayMs={120}>
+            <div className="rounded-3xl bg-white p-6 text-[#18181B] shadow-2xl">
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-mono text-muted">KH-EXAMPLE</p>
+                  <p className="font-bold">{isAr ? 'استلام بالفان مع القياس' : 'Van pickup & measuring'}</p>
+                </div>
+                <span className="rounded-full bg-mist px-3 py-1 text-[11px] font-semibold text-muted">{isAr ? 'مثال' : 'Example'}</span>
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">
-                {isAr ? 'عائد استثماري ملموس ومثبت' : 'Proven to drive tangible ROI'}
-              </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
-                {isAr
-                  ? 'نبني نموذج عمل ملموس مع كل شريك تجاري يقلل من مرتجعات المقاسات ويرفع نسبة رضا وولاء العملاء.'
-                  : 'We build real business cases with every brand partner — identifying genuine challenges and delivering measurable results that go well beyond customer experience.'}
-              </p>
-            </RevealOnScroll>
-
-            {/* Card 2 */}
-            <RevealOnScroll className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all" delayMs={120}>
-              <div className="w-10 h-10 flex items-center justify-center text-white">
-                <svg className="w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.75">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">
-                {isAr ? 'حجز ذكي وبيانات مدعومة بالذكاء الاصطناعي' : 'AI-driven booking & insights'}
-              </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
-                {isAr
-                  ? 'خطوات حجز ذكية تمنح العملاء مقترحات تعديل وصيانة مخصصة، وتزود شركاءنا ببيانات دقيقة وقابلة للتنفيذ.'
-                  : 'Our booking flow uses AI to give customers personalised repair and alteration recommendations, while giving brand partners clear, actionable data on performance and value delivered.'}
-              </p>
-            </RevealOnScroll>
-
-            {/* Card 3 */}
-            <RevealOnScroll className="bg-[#1C202B]/80 border border-white/10 rounded-2xl p-8 space-y-4 hover:border-white/25 hover:-translate-y-1 transition-all" delayMs={240}>
-              <div className="w-10 h-10 flex items-center justify-center text-white">
-                <svg className="w-8 h-8 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="1.75">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">
-                {isAr ? 'خبرة تشغيلية وحرفية متفوقة' : 'Operational expertise'}
-              </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
-                {isAr
-                  ? 'بنية تشغيلية مبنية من الصفر — انتقاء أمهر الخيّاطين، تدريب معتمد، والتزام صارم بمواعيد وجودة التسليم.'
-                  : "We've built exceptional operations from the ground up — best-in-class talent, training programmes, and the processes to consistently deliver on quality and SLAs."}
-              </p>
-            </RevealOnScroll>
-          </div>
+              <ol className="space-y-3">
+                {SAMPLE_PIPELINE.map((s, i) => (
+                  <li key={s} className="flex items-center gap-3 text-sm">
+                    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                      i < SAMPLE_CURRENT ? 'bg-gold text-[#18181B]' : i === SAMPLE_CURRENT ? 'bg-[#18181B] text-white ring-4 ring-gold/30' : 'border border-line text-muted'}`}>
+                      {i < SAMPLE_CURRENT ? '✓' : i + 1}
+                    </span>
+                    <span className={i <= SAMPLE_CURRENT ? 'font-semibold' : 'text-muted'}>{statusLabel(s, 'van_pickup', isAr)}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </RevealOnScroll>
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────
-          6. BOTTOM CALL TO ACTION
-         ───────────────────────────────────────────────────────────── */}
-      <RevealOnScroll>
-        <section className="max-w-4xl mx-auto px-4 text-center space-y-6 pt-6">
-          <h2 className="text-3xl sm:text-5xl font-sans font-bold text-[#18181B] tracking-tight">
-            {isAr ? 'جاهز لتجربة العناية بملابسك؟' : 'Ready to repair & alter your clothes?'}
-          </h2>
-          <p className="text-lg text-[#71717A] max-w-lg mx-auto">
-            {isAr
-              ? 'انضم للآلاف ممن يستمتعون بملابس بمقاس مثالي تدوم لسنوات أطول.'
-              : 'Join thousands of customers wearing clothes that fit right and last longer.'}
-          </p>
-          <div className="pt-2">
-            <Link href="/requests">
-              <span className="btn-shine inline-flex items-center px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#18181B] hover:bg-black shadow-lg transition-transform hover:scale-105">
-                {isAr ? 'احجز خدمة تعديل الآن ➔' : 'Book an alteration now ➔'}
-              </span>
+      {/* QUICK FIX PRICES */}
+      <section className="max-w-6xl mx-auto px-4">
+        <RevealOnScroll className="grid items-center gap-8 lg:grid-cols-[1fr_1.2fr]">
+          <div className="overflow-hidden rounded-3xl aspect-[4/3] bg-cream">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={SCENES.workshop} alt="" className="h-full w-full object-cover" />
+          </div>
+          <div className="space-y-5">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#18181B] tracking-tight">{isAr ? 'تصليح سريع، بسعر واضح' : 'Quick fixes, clear prices'}</h2>
+            <p className="text-[#71717A]">{isAr ? 'للشغلات البسيطة يلي ما بدها قياس. بتعرف السعر قبل ما تحجز.' : 'For small jobs that need no measuring. You see the price before you book.'}</p>
+            <ul className="grid gap-2 sm:grid-cols-2">
+              {QUICK_ITEMS.map((q) => (
+                <li key={q.key} className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-white px-4 py-3 text-sm">
+                  <span>{q.icon} {isAr ? q.ar : q.en}</span>
+                  {options && (
+                    <span className="font-semibold tabular-nums whitespace-nowrap">
+                      <bdi dir="ltr">${options.quick_items_usd[q.key][0]}–{options.quick_items_usd[q.key][1]}</bdi>
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <Link href="/book?service=quick_fix" className="btn-shine inline-flex rounded-full bg-[#18181B] px-6 py-3 text-sm font-bold text-white">
+              {isAr ? 'احجز تصليح سريع' : 'Book a quick fix'}
             </Link>
           </div>
+        </RevealOnScroll>
+      </section>
+
+      {/* FINAL CTA */}
+      <RevealOnScroll>
+        <section className="max-w-4xl mx-auto px-4 text-center space-y-6">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#18181B] tracking-tight">{isAr ? 'قطعتك المفضلة بتستاهل تعيش أطول' : 'Your favourite piece deserves a longer life'}</h2>
+          <p className="text-lg text-[#71717A] max-w-lg mx-auto">{isAr ? 'احجز بدقيقتين، والباقي علينا.' : 'Book in two minutes, we handle the rest.'}</p>
+          <Link href="/book" className="btn-shine inline-flex items-center px-8 py-3.5 rounded-full text-base font-semibold text-white bg-[#18181B] hover:bg-black shadow-lg">
+            {isAr ? 'احجز الآن ←' : 'Book now →'}
+          </Link>
         </section>
       </RevealOnScroll>
-
     </div>
   );
 }

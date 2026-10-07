@@ -1,3 +1,4 @@
+import secrets
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -101,6 +102,13 @@ def _find_by_identifier(db: Session, identifier: str) -> User | None:
     return db.scalar(select(User).where(User.phone == phone))
 
 
+def grant_admin_if_listed(db: Session, user: User) -> None:
+    """Staff accounts are bootstrapped from settings.admin_emails, never self-registered."""
+    if user.email and user.email.lower() in settings.admin_email_list \
+            and not user.has_role(RoleName.ADMIN):
+        user.roles.append(get_role(db, RoleName.ADMIN))
+
+
 def authenticate(db: Session, identifier: str, password: str) -> User:
     user = _find_by_identifier(db, identifier)
     if not verify_password(user.password_hash if user else None, password):
@@ -110,6 +118,35 @@ def authenticate(db: Session, identifier: str, password: str) -> User:
 
     if password_needs_rehash(user.password_hash):
         user.password_hash = hash_password(password)
+    grant_admin_if_listed(db, user)
+    user.last_login_at = datetime.now(UTC)
+    db.commit()
+    return user
+
+
+def google_login(db: Session, claims: dict) -> User:
+    """Signs in (or signs up) the owner of a verified Google ID token."""
+    email = claims["email"].lower()
+    user = db.scalar(select(User).where(User.email == email))
+    if user is None:
+        name = (claims.get("name") or email.split("@")[0]).strip()[:120] or "Khayyat user"
+        user = create_user(
+            db,
+            full_name=name,
+            email=email,
+            # Unusable random password: this account signs in through Google only,
+            # until the owner sets a password themselves.
+            password=secrets.token_urlsafe(32),
+            roles=[RoleName.CUSTOMER],
+            avatar_url=claims.get("picture"),
+        )
+    if not user.is_active:
+        raise Unauthorized("This account is disabled")
+    if user.email_verified_at is None:
+        user.email_verified_at = datetime.now(UTC)
+    if not user.avatar_url and claims.get("picture"):
+        user.avatar_url = claims["picture"]
+    grant_admin_if_listed(db, user)
     user.last_login_at = datetime.now(UTC)
     db.commit()
     return user

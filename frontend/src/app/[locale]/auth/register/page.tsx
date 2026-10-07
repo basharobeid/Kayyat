@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Link, useRouter } from '@/i18n/routing';
 import { useAuth } from '@/lib/auth-context';
 import { APIError } from '@/lib/api-client';
+import { GoogleButton } from '@/components/booking/GoogleButton';
 import { CITY_LABELS, CITY_SLUGS, CitySlug, tailorApi } from '@/lib/api';
 
 // The backend only supports self-registration for these two roles today; fabric-seller and
@@ -35,7 +36,7 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
-  const [city, setCity] = useState<CitySlug>('riyadh');
+  const [city, setCity] = useState<CitySlug>('damascus');
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -71,7 +72,7 @@ export default function RegisterPage() {
       }
       setSuccess(true);
       setTimeout(() => {
-        router.push(user.roles.includes('tailor') ? '/dashboard/tailor' : '/requests');
+        router.push(user.roles.includes('tailor') ? '/dashboard/tailor' : '/account');
       }, 900);
     } catch (err) {
       if (err instanceof APIError) {
@@ -106,6 +107,14 @@ export default function RegisterPage() {
 
         {/* Register Card */}
         <Card className="p-6 sm:p-8 rounded-3xl border border-line/80 shadow-xl space-y-6">
+          {role === 'customer' && (
+            <>
+              <GoogleButton onSuccess={() => router.push('/account')} />
+              <div className="flex items-center gap-3 text-xs text-muted">
+                <span className="h-px flex-1 bg-line" />{isAr ? 'أو أنشئ حساب بالإيميل' : 'or sign up with email'}<span className="h-px flex-1 bg-line" />
+              </div>
+            </>
+          )}
           
           {/* Role Selection Tabs */}
           <div>

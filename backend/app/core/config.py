@@ -28,7 +28,21 @@ class Settings(BaseSettings):
 
     # Business rules live in config so they can change per market without code changes.
     platform_commission_rate: Decimal = Decimal("0.12")
-    currency: str = "SAR"
+    currency: str = "SYP"
+    # Prices are stored in USD (stable) and shown in SYP at this rate. Set the live rate in env.
+    usd_to_syp: int = 110
+    # Comma-separated city slugs where bookings are accepted today (others show "coming soon").
+    service_cities: str = "damascus"
+    # Shown on shop-visit bookings; empty means "sent with your confirmation".
+    shop_address: str = ""
+    # How many bookings one time slot can take: vans for pickup/home/quick, chairs at the shop.
+    van_capacity_per_slot: int = 2
+    shop_capacity_per_slot: int = 3
+
+    # Google Sign-In: the OAuth 2.0 Web client ID. Empty disables POST /auth/google.
+    google_client_id: str = ""
+    # Comma-separated emails that are granted the admin (staff) role when they sign in.
+    admin_emails: str = ""
 
     # Local-disk media storage (swap for S3/R2 in app/core/storage.py).
     media_dir: str = "./media"
@@ -45,6 +59,14 @@ class Settings(BaseSettings):
             if v.startswith(prefix):
                 return "postgresql+psycopg://" + v[len(prefix):]
         return v
+
+    @property
+    def service_city_list(self) -> list[str]:
+        return [c.strip() for c in self.service_cities.split(",") if c.strip()]
+
+    @property
+    def admin_email_list(self) -> set[str]:
+        return {e.strip().lower() for e in self.admin_emails.split(",") if e.strip()}
 
     @property
     def cors_origin_list(self) -> list[str]:

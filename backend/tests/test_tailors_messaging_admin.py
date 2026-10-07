@@ -8,10 +8,10 @@ PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 64
 def test_tailor_profile_services_and_search(make_actor, catalog, client):
     a = make_actor("tailor", "أبو أحمد")
     b = make_actor("tailor", "Khaled")
-    a.patch("/api/v1/tailors/me/profile", {"business_name": "خياطة أبو أحمد", "city": "riyadh",
+    a.patch("/api/v1/tailors/me/profile", {"business_name": "خياطة أبو أحمد", "city": "damascus",
                                            "specialties": ["thobes", "suits"],
                                            "offers_delivery": True, "years_experience": 25})
-    b.patch("/api/v1/tailors/me/profile", {"city": "jeddah", "specialties": ["abayas"]})
+    b.patch("/api/v1/tailors/me/profile", {"city": "aleppo", "specialties": ["abayas"]})
     res = a.put("/api/v1/tailors/me/services", {"items": [
         {"service_id": catalog["hem"], "price_from": 30, "duration_days": 2},
         {"service_id": catalog["suit"], "price_from": 900},
@@ -24,8 +24,8 @@ def test_tailor_profile_services_and_search(make_actor, catalog, client):
         return client.get("/api/v1/tailors", params=params).json()
 
     assert search()["total"] == 2
-    assert [t["city"] for t in search(city="riyadh")["items"]] == ["riyadh"]
-    assert search(specialty="abayas")["items"][0]["city"] == "jeddah"
+    assert [t["city"] for t in search(city="damascus")["items"]] == ["damascus"]
+    assert search(specialty="abayas")["items"][0]["city"] == "aleppo"
     assert search(q="أبو")["total"] == 1
     assert search(delivery="true")["total"] == 1
     assert search(service="custom_suit")["items"][0]["price_from"] == 900

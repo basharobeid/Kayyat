@@ -33,6 +33,9 @@ def _utcnow() -> datetime:
     return datetime.now(UTC).replace(tzinfo=None)
 
 
+utcnow = _utcnow
+
+
 class Timestamps:
     # Python-side defaults (not just server_default) give microsecond precision on every
     # backend, including SQLite's second-resolution CURRENT_TIMESTAMP -- without them, rows

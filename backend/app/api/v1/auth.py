@@ -1,9 +1,15 @@
 from fastapi import APIRouter, status
 
 from app.api.deps import CurrentUser, DbSession
-from app.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenPair
+from app.schemas.auth import (
+    GoogleLoginRequest,
+    LoginRequest,
+    RefreshRequest,
+    RegisterRequest,
+    TokenPair,
+)
 from app.schemas.user import UserRead
-from app.services import auth_service
+from app.services import auth_service, google_auth
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -17,6 +23,13 @@ def register(data: RegisterRequest, db: DbSession) -> TokenPair:
 @router.post("/login", response_model=TokenPair)
 def login(data: LoginRequest, db: DbSession) -> TokenPair:
     user = auth_service.authenticate(db, data.identifier, data.password)
+    return auth_service.issue_tokens(db, user)
+
+
+@router.post("/google", response_model=TokenPair)
+def google(data: GoogleLoginRequest, db: DbSession) -> TokenPair:
+    claims = google_auth.verify_id_token(data.id_token)
+    user = auth_service.google_login(db, claims)
     return auth_service.issue_tokens(db, user)
 
 
